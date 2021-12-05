@@ -1,7 +1,7 @@
 {
     "presets": [
         [
-            "@babel/env",
+            "@babel/preset-env",
             {
                 "targets": {
                     "browsers": [
@@ -13,5 +13,8 @@
                 "modules": false
             }
         ]
+    ],
+    "plugins": [
+        ["@babel/transform-runtime"]
     ]
 }

@@ -1,4 +1,5 @@
 const path = require("path");
+const { CleanWebpackPlugin } = require("clean-webpack-plugin");
 const HtmlWebpackPlugin = require("html-webpack-plugin");
 
 module.exports = {
@@ -23,10 +24,10 @@ module.exports = {
             },
         ],
     },
-    output: {
-        clean: true,
-    },
     plugins: [
+        new CleanWebpackPlugin({
+            root: path.resolve(__dirname, "../")
+          }),
         new HtmlWebpackPlugin({
             template: "./src/index.html",
             favicon: "./favicon.png",
