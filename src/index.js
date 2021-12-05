@@ -68,6 +68,8 @@ if (typeof window.ethereum !== "undefined") {
                 axios.get("https://api.arcadians.io/" + (Math.floor(Math.random() * 3000))).then((result) => {
                     console.log(result.data.image);
                     myAvatar.setAttribute("src", result.data.image);
+                    myAvatar.setAttribute("width", "200px");
+                    myAvatar.setAttribute("height", "200px");
                 })
             })
             .catch((result) => {
