@@ -1,6 +1,28 @@
 import { ethers } from "ethers";
+import axios from "axios";
 
 if (typeof window.ethereum !== "undefined") {
+
+    let connectButton = document.createElement("button");
+    connectButton.setAttribute("id", "connectButton");
+    connectButton.innerHTML = "Connect";
+    document.body.appendChild(connectButton);
+
+    let renderAddress = document.createElement("div");
+    renderAddress.setAttribute("id", "renderAddress");
+    renderAddress.innerHTML = "Please connect first!";
+    document.body.appendChild(renderAddress);
+
+    let renderNetwork = document.createElement("div");
+    renderNetwork.setAttribute("id", "renderNetwork");
+    renderNetwork.innerHTML = "Check network";
+    document.body.appendChild(renderNetwork);
+
+    let address;
+
+    let myAvatar = document.createElement("img");
+    document.body.appendChild(myAvatar);
+
     function setNetwork(networkId) {
         const networks = [
             "Ethereum Main Network (Mainnet)",
@@ -33,11 +55,6 @@ if (typeof window.ethereum !== "undefined") {
         return "Undetected";
     }
 
-    let connectButton = document.createElement("button");
-    connectButton.setAttribute("id", "connectButton");
-    connectButton.innerHTML = "Connect";
-    document.body.appendChild(connectButton);
-
     connectButton.addEventListener("click", () => {
         getAddress();
     });
@@ -48,6 +65,10 @@ if (typeof window.ethereum !== "undefined") {
             .then((result) => {
                 address = result;
                 renderAddress.innerHTML = result;
+                axios.get("https://api.arcadians.io/" + (Math.floor(Math.random() * 3000))).then((result) => {
+                    console.log(result.data.image);
+                    myAvatar.setAttribute("src", result.data.image);
+                })
             })
             .catch((result) => {
                 renderAddress.innerHTML = result.message;
@@ -57,24 +78,13 @@ if (typeof window.ethereum !== "undefined") {
         renderNetwork.innerHTML = setNetwork(chainId);
     }
 
-    let renderAddress = document.createElement("div");
-    renderAddress.setAttribute("id", "renderAddress");
-    renderAddress.innerHTML = "Please connect first!";
-    document.body.appendChild(renderAddress);
-
-    let renderNetwork = document.createElement("div");
-    renderNetwork.setAttribute("id", "renderNetwork");
-    renderNetwork.innerHTML = "Check network";
-    document.body.appendChild(renderNetwork);
-
-    let address;
-
     const provider = new ethers.providers.Web3Provider(window.ethereum);
 
     ethereum.on("accountsChanged", (accounts) => {
         if (accounts.length === 0) {
             renderAddress.innerHTML = "Disconnected";
             renderNetwork.innerHTML = "Undetected";
+            window.location.reload();
         } else {
             renderAddress.innerHTML = accounts[0];
             ethereum.request({ method: "eth_chainId" }).then((chainId) => {
