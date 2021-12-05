@@ -1,20 +1,13 @@
-import Web3 from "web3";
-import Web3Modal from "web3modal";
+import { ethers } from "ethers";
 
-const providerOptions = {
-    /* See Provider Options Section */
-};
+ethereum.request({ method: 'eth_requestAccounts' }).then(
+    () => {
+        alert("Logged in!");
+    }
+);
 
-const web3Modal = new Web3Modal({
-    network: "mainnet", // optional
-    cacheProvider: true, // optional
-    providerOptions // required
-});
+const provider = new ethers.providers.Web3Provider(window.ethereum)
 
-const provider = async function () {
-    await web3Modal.connect()
-};
+const signer = provider.getSigner()
 
 
-
-const web3 = new Web3(provider());
