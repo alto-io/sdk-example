@@ -44,7 +44,7 @@ if (typeof window.ethereum !== "undefined") {
             return networks[2];
         }
 
-        if (networkId === "0x4") {
+        if (networkId === "0x5") {
             return networks[3];
         }
 
@@ -75,6 +75,7 @@ if (typeof window.ethereum !== "undefined") {
                 console.log(result);
             });
         const chainId = await ethereum.request({ method: "eth_chainId" });
+        console.log(chainId)
         renderNetwork.innerHTML = setNetwork(chainId);
     }
 
