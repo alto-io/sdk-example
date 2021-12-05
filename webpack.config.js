@@ -4,6 +4,14 @@ const HtmlWebpackPlugin = require("html-webpack-plugin");
 module.exports = {
     mode: "development",
     devtool: "eval-source-map",
+    experiments: {
+        topLevelAwait: true,
+    },
+    devServer: {
+        static: {
+            directory: path.join(__dirname, "./"),
+        },
+    },
     module: {
         rules: [
             {
@@ -24,8 +32,8 @@ module.exports = {
         ],
     },
     output: {
-        filename: '[name].bundle.js',
-        path: path.resolve(__dirname, 'dist'),
+        filename: "[name].bundle.js",
+        path: path.resolve(__dirname, "dist"),
         clean: true,
     },
     plugins: [
