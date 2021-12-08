@@ -1,8 +1,8 @@
 import { ethers } from "ethers";
 import axios from "axios";
+import Phaser from "phaser";
 
 if (typeof window.ethereum !== "undefined") {
-
     let connectButton = document.createElement("button");
     connectButton.setAttribute("id", "connectButton");
     connectButton.innerHTML = "Connect";
@@ -65,19 +65,57 @@ if (typeof window.ethereum !== "undefined") {
             .then((result) => {
                 address = result;
                 renderAddress.innerHTML = result;
-                axios.get("https://api.arcadians.io/" + (Math.floor(Math.random() * 3000))).then((result) => {
-                    console.log(result.data.image);
-                    myAvatar.setAttribute("src", result.data.image);
-                    myAvatar.setAttribute("width", "200px");
-                    myAvatar.setAttribute("height", "200px");
-                })
+                axios
+                    .get("https://api.arcadians.io/" + Math.floor(Math.random() * 3000))
+                    .then((result) => {
+                        console.log(result.data.image);
+                        myAvatar.setAttribute("src", result.data.image);
+                        myAvatar.setAttribute("width", "200px");
+                        myAvatar.setAttribute("height", "200px");
+
+                        console.log(myAvatar.src);
+
+                        class SampleGame extends Phaser.Scene {
+                            constructor() {
+                                super();
+                            }
+
+                            preload() {
+                                this.load.image("useAvatar", myAvatar.src);
+                            }
+
+                            create() {
+                                let currentAvatar = this.add.image(200, 200, "useAvatar");
+                                currentAvatar.setOrigin(0, 1);
+
+                                this.tweens.add({
+                                    targets: currentAvatar,
+                                    y: 400,
+                                    duration: 2000,
+                                    ease: "Power2",
+                                    yoyo: true,
+                                    loop: -1,
+                                });
+                            }
+                        }
+
+                        const config = {
+                            type: Phaser.AUTO,
+                            parent: "sample-game",
+                            width: 400,
+                            height: 400,
+                            scene: SampleGame,
+                        };
+
+                        const game = new Phaser.Game(config);
+                    });
             })
             .catch((result) => {
                 renderAddress.innerHTML = result.message;
                 console.log(result);
             });
         const chainId = await ethereum.request({ method: "eth_chainId" });
-        console.log(chainId)
+        console.log(chainId);
         renderNetwork.innerHTML = setNetwork(chainId);
     }
 
