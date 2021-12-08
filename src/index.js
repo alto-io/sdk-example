@@ -3,149 +3,151 @@ import axios from "axios";
 import Phaser from "phaser";
 
 if (typeof window.ethereum !== "undefined") {
-    let connectButton = document.createElement("button");
-    connectButton.setAttribute("id", "connectButton");
-    connectButton.innerHTML = "Connect";
-    document.body.appendChild(connectButton);
+  let connectButton = document.createElement("button");
+  connectButton.setAttribute("id", "connectButton");
+  connectButton.innerHTML = "Connect";
+  document.body.appendChild(connectButton);
 
-    let renderAddress = document.createElement("div");
-    renderAddress.setAttribute("id", "renderAddress");
-    renderAddress.innerHTML = "Please connect first!";
-    document.body.appendChild(renderAddress);
+  let renderAddress = document.createElement("div");
+  renderAddress.setAttribute("id", "renderAddress");
+  renderAddress.innerHTML = "Please connect first!";
+  document.body.appendChild(renderAddress);
 
-    let renderNetwork = document.createElement("div");
-    renderNetwork.setAttribute("id", "renderNetwork");
-    renderNetwork.innerHTML = "Check network";
-    document.body.appendChild(renderNetwork);
+  let renderNetwork = document.createElement("div");
+  renderNetwork.setAttribute("id", "renderNetwork");
+  renderNetwork.innerHTML = "Check network";
+  document.body.appendChild(renderNetwork);
 
-    let address;
+  let address;
 
-    let myAvatar = document.createElement("img");
-    document.body.appendChild(myAvatar);
+  let myAvatar = document.createElement("img");
+  document.body.appendChild(myAvatar);
 
-    function setNetwork(networkId) {
-        const networks = [
-            "Ethereum Main Network (Mainnet)",
-            "Ropsten Test Network",
-            "Rinkeby Test Network",
-            "Goerli Test Network",
-            "Kovan Test Network",
-        ];
+  function setNetwork(networkId) {
+    const networks = [
+      "Ethereum Main Network (Mainnet)",
+      "Ropsten Test Network",
+      "Rinkeby Test Network",
+      "Goerli Test Network",
+      "Kovan Test Network",
+    ];
 
-        if (networkId === "0x1") {
-            return networks[0];
-        }
-
-        if (networkId === "0x3") {
-            return networks[1];
-        }
-
-        if (networkId === "0x4") {
-            return networks[2];
-        }
-
-        if (networkId === "0x5") {
-            return networks[3];
-        }
-
-        if (networkId === "0x2a") {
-            return networks[4];
-        }
-
-        return "Undetected";
+    if (networkId === "0x1") {
+      return networks[0];
     }
 
-    connectButton.addEventListener("click", () => {
-        getAddress();
-    });
-
-    async function getAddress() {
-        ethereum
-            .request({ method: "eth_requestAccounts" })
-            .then((result) => {
-                address = result;
-                renderAddress.innerHTML = result;
-                axios
-                    .get("https://api.arcadians.io/" + Math.floor(1 + Math.random() * 2999))
-                    .then((result) => {
-                        console.log(result.data.image);
-                        myAvatar.setAttribute("src", result.data.image);
-                        myAvatar.setAttribute("width", "200px");
-                        myAvatar.setAttribute("height", "200px");
-
-                        class SampleGame extends Phaser.Scene {
-                            constructor() {
-                                super("SampleGame");
-                            }
-
-                            preload() {
-                                this.load.image("useAvatar", myAvatar.src);
-                            }
-
-                            create() {
-                                let currentAvatar = this.add.image(200, 200, "useAvatar");
-                                currentAvatar.setOrigin(0.5, 1);
-                                currentAvatar.setScale(0.25, 0.25);
-
-                                this.tweens.add({
-                                    targets: currentAvatar,
-                                    y: 400,
-                                    duration: 2000,
-                                    ease: "Power2",
-                                    yoyo: true,
-                                    loop: -1,
-                                });
-                            }
-                        }
-
-                        const config = {
-                            type: Phaser.AUTO,
-                            backgroundColor:0xd595f3,
-                            parent: "sample-game",
-                            width: 400,
-                            height: 400,
-                            scene: SampleGame,
-                            physics: {
-                                default: 'arcade',
-                                arcade: {
-                                    gravity: {
-                                        y: 0
-                                    }
-                                }
-                            },
-                        };
-
-                        const game = new Phaser.Game(config);
-                    });
-            })
-            .catch((result) => {
-                renderAddress.innerHTML = result.message;
-                console.log(result);
-            });
-        const chainId = await ethereum.request({ method: "eth_chainId" });
-        console.log(chainId);
-        renderNetwork.innerHTML = setNetwork(chainId);
+    if (networkId === "0x3") {
+      return networks[1];
     }
 
-    const provider = new ethers.providers.Web3Provider(window.ethereum);
+    if (networkId === "0x4") {
+      return networks[2];
+    }
 
-    ethereum.on("accountsChanged", (accounts) => {
-        if (accounts.length === 0) {
-            renderAddress.innerHTML = "Disconnected";
-            renderNetwork.innerHTML = "Undetected";
-            window.location.reload();
-        } else {
-            renderAddress.innerHTML = accounts[0];
-            ethereum.request({ method: "eth_chainId" }).then((chainId) => {
-                renderNetwork.innerHTML = setNetwork(chainId);
-            });
-        }
-    });
+    if (networkId === "0x5") {
+      return networks[3];
+    }
 
-    ethereum.on("chainChanged", (chainId) => {
+    if (networkId === "0x2a") {
+      return networks[4];
+    }
+
+    return "Undetected";
+  }
+
+  connectButton.addEventListener("click", () => {
+    getAddress();
+  });
+
+  async function getAddress() {
+    ethereum
+      .request({ method: "eth_requestAccounts" })
+      .then((result) => {
+        address = result;
+        renderAddress.innerHTML = result;
+        axios
+          .get(
+            "https://api.arcadians.io/" + Math.floor(1 + Math.random() * 2999)
+          )
+          .then((result) => {
+            console.log(result.data.image);
+            myAvatar.setAttribute("src", result.data.image);
+            myAvatar.setAttribute("width", "200px");
+            myAvatar.setAttribute("height", "200px");
+
+            class SampleGame extends Phaser.Scene {
+              constructor() {
+                super("SampleGame");
+              }
+
+              preload() {
+                this.load.image("useAvatar", myAvatar.src);
+              }
+
+              create() {
+                let currentAvatar = this.add.image(200, 200, "useAvatar");
+                currentAvatar.setOrigin(0.5, 1);
+                currentAvatar.setScale(0.25, 0.25);
+
+                this.tweens.add({
+                  targets: currentAvatar,
+                  y: 400,
+                  duration: 2000,
+                  ease: "Power2",
+                  yoyo: true,
+                  loop: -1,
+                });
+              }
+            }
+
+            const config = {
+              type: Phaser.AUTO,
+              backgroundColor: 0xd595f3,
+              parent: "sample-game",
+              width: 400,
+              height: 400,
+              scene: SampleGame,
+              physics: {
+                default: "arcade",
+                arcade: {
+                  gravity: {
+                    y: 0,
+                  },
+                },
+              },
+            };
+
+            const game = new Phaser.Game(config);
+          });
+      })
+      .catch((result) => {
+        renderAddress.innerHTML = result.message;
+        console.log(result);
+      });
+    const chainId = await ethereum.request({ method: "eth_chainId" });
+    console.log(chainId);
+    renderNetwork.innerHTML = setNetwork(chainId);
+  }
+
+  const provider = new ethers.providers.Web3Provider(window.ethereum);
+
+  ethereum.on("accountsChanged", (accounts) => {
+    if (accounts.length === 0) {
+      renderAddress.innerHTML = "Disconnected";
+      renderNetwork.innerHTML = "Undetected";
+      window.location.reload();
+    } else {
+      renderAddress.innerHTML = accounts[0];
+      ethereum.request({ method: "eth_chainId" }).then((chainId) => {
         renderNetwork.innerHTML = setNetwork(chainId);
-        window.location.reload();
-    });
+      });
+    }
+  });
+
+  ethereum.on("chainChanged", (chainId) => {
+    renderNetwork.innerHTML = setNetwork(chainId);
+    window.location.reload();
+  });
 } else {
-    alert("Please install MetaMask!");
+  alert("Please install MetaMask!");
 }
