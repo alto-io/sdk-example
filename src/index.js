@@ -66,18 +66,16 @@ if (typeof window.ethereum !== "undefined") {
                 address = result;
                 renderAddress.innerHTML = result;
                 axios
-                    .get("https://api.arcadians.io/" + Math.floor(Math.random() * 3000))
+                    .get("https://api.arcadians.io/" + Math.floor(1 + Math.random() * 2999))
                     .then((result) => {
                         console.log(result.data.image);
                         myAvatar.setAttribute("src", result.data.image);
                         myAvatar.setAttribute("width", "200px");
                         myAvatar.setAttribute("height", "200px");
 
-                        console.log(myAvatar.src);
-
                         class SampleGame extends Phaser.Scene {
                             constructor() {
-                                super();
+                                super("SampleGame");
                             }
 
                             preload() {
@@ -86,7 +84,8 @@ if (typeof window.ethereum !== "undefined") {
 
                             create() {
                                 let currentAvatar = this.add.image(200, 200, "useAvatar");
-                                currentAvatar.setOrigin(0, 1);
+                                currentAvatar.setOrigin(0.5, 1);
+                                currentAvatar.setScale(0.25, 0.25);
 
                                 this.tweens.add({
                                     targets: currentAvatar,
@@ -101,10 +100,19 @@ if (typeof window.ethereum !== "undefined") {
 
                         const config = {
                             type: Phaser.AUTO,
+                            backgroundColor:0xd595f3,
                             parent: "sample-game",
                             width: 400,
                             height: 400,
                             scene: SampleGame,
+                            physics: {
+                                default: 'arcade',
+                                arcade: {
+                                    gravity: {
+                                        y: 0
+                                    }
+                                }
+                            },
                         };
 
                         const game = new Phaser.Game(config);
