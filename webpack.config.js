@@ -3,10 +3,6 @@ const HtmlWebpackPlugin = require("html-webpack-plugin");
 
 module.exports = {
     mode: "development",
-    devtool: "eval-source-map",
-    experiments: {
-        topLevelAwait: true,
-    },
     devServer: {
         static: {
             directory: path.join(__dirname, "./"),

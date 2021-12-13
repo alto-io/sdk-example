@@ -15,7 +15,6 @@
         ]
     ],
     "plugins": [
-        ["@babel/transform-runtime"],
-        ["@babel/plugin-syntax-top-level-await"]
+        ["@babel/transform-runtime"]
     ]
 }
