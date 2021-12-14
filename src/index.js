@@ -77,7 +77,7 @@ if (typeof window.ethereum !== "undefined") {
             myAvatar.setAttribute("width", "200px");
             myAvatar.setAttribute("height", "200px");
 
-            class SampleGame extends Phaser.Scene {
+            /*            class SampleGame extends Phaser.Scene {
               constructor() {
                 super("SampleGame");
               }
@@ -116,7 +116,7 @@ if (typeof window.ethereum !== "undefined") {
                 this.spikePool[1].setOrigin(0.5, 0.5);
                 this.spikePool = [];
                 if (addScore) {
-                  //this.updateScore(1);
+                  this.updateScore(1);
                 }
               }
 
@@ -137,7 +137,7 @@ if (typeof window.ethereum !== "undefined") {
                 this.currentAvatar.setScale(0.2, 0.2);
                 this.input.on("pointerdown", this.fly, this);
 
-                /* let downSpike = this.add.image(
+                let downSpike = this.add.image(
                   this.game.scale.width * 0.8,
                   this.game.scale.height * 1,
                   "spike"
@@ -149,7 +149,7 @@ if (typeof window.ethereum !== "undefined") {
                   "spike"
                 );
 
-                this.topSpike.setRotation(Math.PI); */
+                this.topSpike.setRotation(Math.PI);
 
                 this.spikeGroup = this.physics.add.group();
                 this.spikePool = [];
@@ -190,8 +190,8 @@ if (typeof window.ethereum !== "undefined") {
               },
             };
 
-            const game = new Phaser.Game(config);
-          });
+            const game = new Phaser.Game(config);*/
+          }); 
       })
       .catch((result) => {
         renderAddress.innerHTML = result.message;
