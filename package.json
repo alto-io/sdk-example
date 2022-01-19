@@ -36,8 +36,7 @@
   },
   "dependencies": {
     "@babel/runtime": "^7.16.3",
-    "axios": "^0.24.0",
-    "ethers": "^5.5.2",
+    "arcadians-client-sdk": "^0.3.3",
     "phaser": "^3.55.2"
   }
 }
