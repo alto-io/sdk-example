@@ -117,7 +117,7 @@ const config = {
   },
 };
 
-let testMode = true;
+let testMode = false;
 let testAddress = "0xf0103243f4d22b5696588646b21313d85916a16a";
 let arc = new Arcadians(testMode, testAddress);
 
