@@ -106,6 +106,10 @@ const config = {
   parent: "sample-game",
   width: 400,
   height: 400,
+  scale: {
+    mode: Phaser.Scale.FIT,
+    autoCenter: Phaser.Scale.CENTER_BOTH,
+  },
   scene: SampleGame,
   physics: {
     default: "arcade",
@@ -117,7 +121,7 @@ const config = {
   },
 };
 
-let testMode = false;
+let testMode = true;
 let testAddress = "0xf0103243f4d22b5696588646b21313d85916a16a";
 let arc = new Arcadians(testMode, testAddress);
 
