@@ -18,7 +18,7 @@ export default class Home extends Phaser.Scene {
     let game = this.game;
       function onUserSelect(selectedNft) {
         if (typeof selectedNft === "object") {
-          game.scene.pause("Home");
+          game.scene.stop("Home");
           game.scene.start("Game", selectedNft.image);
         }
         else {
