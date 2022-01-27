@@ -97,5 +97,10 @@ export default class Game extends Phaser.Scene {
         }
       }
     }, this);
+
+    if (this.currentAvatar.y > this.game.scale.height) {
+      location.reload();
+    }
+
   }
 }

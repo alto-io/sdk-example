@@ -6,8 +6,8 @@ const config = {
   type: Phaser.AUTO,
   backgroundColor: 0xd595f3,
   parent: "sample-game",
-  width: 400,
-  height: 400,
+  width: 800,
+  height: 800,
   scale: {
     mode: Phaser.Scale.FIT,
     autoCenter: Phaser.Scale.CENTER_BOTH,
