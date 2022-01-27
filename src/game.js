@@ -1,19 +1,19 @@
 import background from "./assets/background.png";
 import spike from "./assets/spike.png";
 
-export default class SampleGame extends Phaser.Scene {
+export default class Game extends Phaser.Scene {
   constructor() {
-    super("SampleGame");
+    super("Game");
   }
     
-    init(data) {
-        console.log("init", data);
+    init(imageLink) {
+      this.imageLink = imageLink;
     }
 
   preload() {
     this.load.image("background", background);
     this.load.image("spike", spike);
-    //this.load.image("useAvatar", link);
+    this.load.image("selectedAvatar", this.imageLink);
   }
 
   fly() {
@@ -57,7 +57,7 @@ export default class SampleGame extends Phaser.Scene {
     this.currentAvatar = this.physics.add.sprite(
       this.game.scale.width * 0.5,
       this.game.scale.height * 0.5,
-      "spike"
+      "selectedAvatar"
     );
     this.currentAvatar.body.gravity.y = 800;
     this.currentAvatar.setOrigin(0.5, 0.5);
