@@ -1,50 +1,32 @@
 import background from "./assets/background.png";
-import spike from "./assets/spike.png";
+import block from "./assets/block.png";
+import playerAvatar from "./assets/playerAvatar.png";
 
 export default class Game extends Phaser.Scene {
   constructor() {
     super("Game");
+
+    this.playerGravity = 0.5;
+    this.playerVelocityY = 0;
+    this.playerJumpForce = -10;
+
+    this.blocksWidth = 200;
+    this.blocksOffsetDistance = 200;
+    this.blocksOffset = this.setBlocksGroupOffset(
+      -this.blocksOffsetDistance,
+      this.blocksOffsetDistance
+    );
+    this.blocksVerticalDistance = 150;
   }
-    
-    init(imageLink) {
-      this.imageLink = imageLink;
-    }
+
+  init(imageLink) {
+    this.imageLink = imageLink;
+  }
 
   preload() {
     this.load.image("background", background);
-    this.load.image("spike", spike);
-    this.load.image("selectedAvatar", this.imageLink);
-  }
-
-  fly() {
-    this.currentAvatar.body.velocity.y = -300;
-  }
-
-  getRightmostSpike() {
-    let rightmostSpike = 0;
-    this.spikeGroup.getChildren().forEach(function (spike) {
-      rightmostSpike = Math.max(rightmostSpike, spike.x);
-    });
-    return rightmostSpike;
-  }
-
-  placeSpikes(addScore) {
-    let rightmost = this.getRightmostSpike();
-    let spikeHolePosition = Phaser.Math.Between(-100, 100);
-    this.spikePool[0].x =
-      rightmost +
-      this.spikePool[0].getBounds().width +
-      Phaser.Math.Between(220, 280);
-    this.spikePool[0].y = 0 + spikeHolePosition;
-    this.spikePool[0].setOrigin(0.5, 0.5);
-    this.spikePool[0].scaleY = -1;
-    this.spikePool[1].x = this.spikePool[0].x;
-    this.spikePool[1].y = this.game.scale.height + spikeHolePosition;
-    this.spikePool[1].setOrigin(0.5, 0.5);
-    this.spikePool = [];
-    if (addScore) {
-      //this.updateScore(1);
-    }
+    this.load.image("block", block);
+    this.load.image("playerAvatar", playerAvatar);
   }
 
   create() {
@@ -54,53 +36,137 @@ export default class Game extends Phaser.Scene {
       "background"
     );
 
-    this.currentAvatar = this.physics.add.sprite(
+    this.player = this.add.sprite(
       this.game.scale.width * 0.5,
       this.game.scale.height * 0.5,
-      "selectedAvatar"
+      "playerAvatar"
     );
-    this.currentAvatar.body.gravity.y = 800;
-    this.currentAvatar.setOrigin(0.5, 0.5);
-    this.currentAvatar.setScale(0.2, 0.2);
-    this.input.on("pointerdown", this.fly, this);
+    this.player.setOrigin(0.5, 0.5);
+    this.player.setScale(0.4, 0.4);
+    this.player.body = {
+      x: this.player.x,
+      y: this.player.y,
+      width: this.player.width * this.player.scaleX,
+      height: this.player.height * this.player.scaleY,
+    };
+    this.player.updateBody = () => {
+      this.player.body.x = this.player.x;
+      this.player.body.y = this.player.y;
+    };
+    this.input.on("pointerdown", this.makePlayerJump, this);
 
-    this.downSpike = this.add.image(
-      this.game.scale.width * 0.8,
-      this.game.scale.height * 1,
-      "spike"
+    this.topBlock = this.add.image(
+      this.game.scale.width + this.blocksWidth * 0.5,
+      this.game.scale.height + this.blocksVerticalDistance - this.blocksOffset,
+      "block"
     );
+    this.topBlock.setOrigin(0.5, 0.5);
+    this.topBlock.body = {
+      x: this.topBlock.x,
+      y: this.topBlock.y,
+      width: this.topBlock.width * this.topBlock.scaleX,
+      height: this.topBlock.height * this.topBlock.scaleY,
+    };
+    this.topBlock.updateBody = () => {
+      this.topBlock.body.x = this.topBlock.x;
+      this.topBlock.body.y = this.topBlock.y;
+    };
 
-    this.topSpike = this.add.image(
-      this.game.scale.width * 0.8,
-      this.game.scale.height * 0,
-      "spike"
+    this.bottomBlock = this.add.image(
+      this.game.scale.width + this.blocksWidth * 0.5,
+      0 - this.blocksVerticalDistance - this.blocksOffset,
+      "block"
     );
+    this.bottomBlock.setOrigin(0.5, 0.5);
+    this.bottomBlock.body = {
+      x: this.bottomBlock.x,
+      y: this.bottomBlock.y,
+      width: this.bottomBlock.width * this.bottomBlock.scaleX,
+      height: this.bottomBlock.height * this.bottomBlock.scaleY,
+    };
+    this.bottomBlock.updateBody = () => {
+      this.bottomBlock.body.x = this.bottomBlock.x;
+      this.bottomBlock.body.y = this.bottomBlock.y;
+    };
+  }
 
-    this.topSpike.setRotation(Math.PI);
+  setBlocksGroupOffset(min, max) {
+    return Math.floor(Math.random() * (max - min + 1) + min);
+  }
 
-    this.spikeGroup = this.physics.add.group();
-    this.spikePool = [];
-    for (let i = 0; i < 4; i++) {
-      this.spikePool.push(this.spikeGroup.create(0, 0, "spike"));
-      this.spikePool.push(this.spikeGroup.create(0, 0, "spike"));
-      this.placeSpikes(false);
+  updatePlayer() {
+    this.player.tint = 0xffffff;
+    this.playerVelocityY += this.playerGravity;
+    this.player.y += this.playerVelocityY;
+    this.player.updateBody();
+  }
+
+  updateBlocks() {
+    this.topBlock.x -= 5;
+    if (this.topBlock.x < -this.topBlock.width * 0.5) {
+      this.blocksOffset = this.setBlocksGroupOffset(
+        -this.blocksOffsetDistance,
+        this.blocksOffsetDistance
+      );
+      this.topBlock.x = this.game.scale.width + this.topBlock.width * 0.5;
+      this.topBlock.y =
+        this.game.scale.height +
+        this.blocksVerticalDistance -
+        this.blocksOffset;
     }
-    this.spikeGroup.setVelocityX(-125);
+    this.topBlock.updateBody();
+
+    this.bottomBlock.x -= 5;
+    if (this.bottomBlock.x < -this.bottomBlock.width * 0.5) {
+      this.bottomBlock.x = this.game.scale.width + this.bottomBlock.width * 0.5;
+      this.bottomBlock.y = 0 - this.blocksVerticalDistance - this.blocksOffset;
+    }
+    this.bottomBlock.updateBody();
+  }
+
+  makePlayerJump() {
+    this.playerVelocityY = this.playerJumpForce;
+  }
+
+  detectCollisionBetweenBodies(bodyA, bodyB) {
+    if (
+      bodyA.x - bodyA.width * 0.5 <= bodyB.x + bodyB.width * 0.5 &&
+      bodyA.x + bodyA.width * 0.5 >= bodyB.x - bodyB.width * 0.5 &&
+      bodyA.y - bodyA.height * 0.5 <= bodyB.y + bodyB.height * 0.5 &&
+      bodyA.y + bodyA.height * 0.5 >= bodyB.y - bodyB.height * 0.5
+    ) {
+      return true;
+    }
+  }
+
+  checkForCollisions() {
+    if (
+      this.detectCollisionBetweenBodies(
+        this.player.body,
+        this.topBlock.body
+      ) === true
+    ) {
+      this.handleCollision();
+    }
+
+    if (
+      this.detectCollisionBetweenBodies(
+        this.player.body,
+        this.bottomBlock.body
+      ) === true
+    ) {
+      this.handleCollision();
+    }
+  }
+
+  handleCollision() {
+    this.player.tint = 0xff0000;
+    //this.scene.pause();
   }
 
   update() {
-    this.spikeGroup.getChildren().forEach(function (spike) {
-      if (spike.getBounds().right < 0) {
-        this.spikePool.push(spike);
-        if (this.spikePool.length == 2) {
-          this.placeSpikes(true);
-        }
-      }
-    }, this);
-
-    if (this.currentAvatar.y > this.game.scale.height) {
-      location.reload();
-    }
-
+    this.updatePlayer();
+    this.updateBlocks();
+    this.checkForCollisions();
   }
 }
