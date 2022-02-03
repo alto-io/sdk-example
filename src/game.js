@@ -8,11 +8,15 @@ export default class Game extends Phaser.Scene {
 
   init(data) {
     this.selectedAvatar = data.image;
+    console.log(data.image);
   }
 
   preload() {
     this.load.image("background", background);
     this.load.image("block", block);
+    if (this.textures.exists("playerAvatar") === true) {
+      this.textures.remove("playerAvatar");
+    }
     this.load.image("playerAvatar", this.selectedAvatar);
   }
 
