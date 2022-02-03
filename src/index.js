@@ -1,6 +1,7 @@
 import Phaser from "phaser";
 import Home from "./home";
 import Game from "./game";
+import End from "./end";
 
 const config = {
   type: Phaser.AUTO,
@@ -12,8 +13,8 @@ const config = {
     mode: Phaser.Scale.FIT,
     autoCenter: Phaser.Scale.CENTER_BOTH,
   },
-  scene: [Game],
+  scene: [Home, Game, End],
 };
 
 const game = new Phaser.Game(config);
-game.scene.start("Game");
+game.scene.start("Home");

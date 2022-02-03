@@ -1,11 +1,22 @@
 import background from "./assets/background.png";
 import block from "./assets/block.png";
-import playerAvatar from "./assets/playerAvatar.png";
 
 export default class Game extends Phaser.Scene {
   constructor() {
     super("Game");
+  }
 
+  init(data) {
+    this.selectedAvatar = data.image;
+  }
+
+  preload() {
+    this.load.image("background", background);
+    this.load.image("block", block);
+    this.load.image("playerAvatar", this.selectedAvatar);
+  }
+
+  create() {
     this.playerGravity = 0.5;
     this.playerVelocityY = 0;
     this.playerJumpForce = -10;
@@ -17,19 +28,9 @@ export default class Game extends Phaser.Scene {
       this.blocksOffsetDistance
     );
     this.blocksVerticalDistance = 150;
-  }
 
-  init(imageLink) {
-    this.imageLink = imageLink;
-  }
+    this.score = 0;
 
-  preload() {
-    this.load.image("background", background);
-    this.load.image("block", block);
-    this.load.image("playerAvatar", playerAvatar);
-  }
-
-  create() {
     this.backgroundImage = this.add.image(
       this.game.scale.width * 0.5,
       this.game.scale.height * 0.5,
@@ -43,15 +44,15 @@ export default class Game extends Phaser.Scene {
     );
     this.player.setOrigin(0.5, 0.5);
     this.player.setScale(0.4, 0.4);
-    this.player.body = {
+    this.player.collisionBody = {
       x: this.player.x,
       y: this.player.y,
       width: this.player.width * this.player.scaleX,
       height: this.player.height * this.player.scaleY,
     };
     this.player.updateBody = () => {
-      this.player.body.x = this.player.x;
-      this.player.body.y = this.player.y;
+      this.player.collisionBody.x = this.player.x;
+      this.player.collisionBody.y = this.player.y;
     };
     this.input.on("pointerdown", this.makePlayerJump, this);
 
@@ -61,15 +62,15 @@ export default class Game extends Phaser.Scene {
       "block"
     );
     this.topBlock.setOrigin(0.5, 0.5);
-    this.topBlock.body = {
+    this.topBlock.collisionBody = {
       x: this.topBlock.x,
       y: this.topBlock.y,
       width: this.topBlock.width * this.topBlock.scaleX,
       height: this.topBlock.height * this.topBlock.scaleY,
     };
     this.topBlock.updateBody = () => {
-      this.topBlock.body.x = this.topBlock.x;
-      this.topBlock.body.y = this.topBlock.y;
+      this.topBlock.collisionBody.x = this.topBlock.x;
+      this.topBlock.collisionBody.y = this.topBlock.y;
     };
 
     this.bottomBlock = this.add.image(
@@ -78,16 +79,49 @@ export default class Game extends Phaser.Scene {
       "block"
     );
     this.bottomBlock.setOrigin(0.5, 0.5);
-    this.bottomBlock.body = {
+    this.bottomBlock.collisionBody = {
       x: this.bottomBlock.x,
       y: this.bottomBlock.y,
       width: this.bottomBlock.width * this.bottomBlock.scaleX,
       height: this.bottomBlock.height * this.bottomBlock.scaleY,
     };
     this.bottomBlock.updateBody = () => {
-      this.bottomBlock.body.x = this.bottomBlock.x;
-      this.bottomBlock.body.y = this.bottomBlock.y;
+      this.bottomBlock.collisionBody.x = this.bottomBlock.x;
+      this.bottomBlock.collisionBody.y = this.bottomBlock.y;
     };
+
+    this.invisibleScoreBlock = this.add.image(
+      this.game.scale.width * 0.5,
+      this.game.scale.height * 0.5,
+      "block"
+    );
+    this.invisibleScoreBlock.setAlpha(0);
+    this.invisibleScoreBlock.setOrigin(0.5, 0.5);
+    this.invisibleScoreBlock.collisionBody = {
+      x: this.invisibleScoreBlock.x,
+      y: this.invisibleScoreBlock.y,
+      width: this.invisibleScoreBlock.width * this.invisibleScoreBlock.scaleX,
+      height: this.invisibleScoreBlock.height * this.invisibleScoreBlock.scaleY,
+    };
+    this.invisibleScoreBlock.updateBody = () => {
+      this.invisibleScoreBlock.collisionBody.x = this.invisibleScoreBlock.x;
+      this.invisibleScoreBlock.collisionBody.y = this.invisibleScoreBlock.y;
+    };
+    this.invisibleScoreBlock.scored = false;
+    this.invisibleScoreBlock.setVisible(false);
+
+    this.scoreText = this.add.text(
+      this.game.scale.width * 0.5,
+      this.game.scale.height * 0.1,
+      this.score.toString(),
+      {
+        fill: "#FFFFFF",
+        fontSize: "80px",
+        stroke: "#000000",
+        strokeThickness: 8,
+      }
+    );
+    this.scoreText.setOrigin(0.5, 0.5);
   }
 
   setBlocksGroupOffset(min, max) {
@@ -95,10 +129,20 @@ export default class Game extends Phaser.Scene {
   }
 
   updatePlayer() {
-    this.player.tint = 0xffffff;
     this.playerVelocityY += this.playerGravity;
     this.player.y += this.playerVelocityY;
     this.player.updateBody();
+
+    if (
+      this.player.y + this.player.collisionBody.height * 0.5 >=
+      this.game.scale.height
+    ) {
+      this.handleCollision();
+    }
+
+    if (this.player.y - this.player.collisionBody.height * 0.5 <= 0) {
+      this.handleCollision();
+    }
   }
 
   updateBlocks() {
@@ -113,8 +157,15 @@ export default class Game extends Phaser.Scene {
         this.game.scale.height +
         this.blocksVerticalDistance -
         this.blocksOffset;
+      this.invisibleScoreBlock.scored = false;
     }
     this.topBlock.updateBody();
+
+    if (this.invisibleScoreBlock.scored === false) {
+      this.invisibleScoreBlock.x =
+        this.topBlock.x + this.invisibleScoreBlock.collisionBody.width * 0.5;
+      this.invisibleScoreBlock.updateBody();
+    }
 
     this.bottomBlock.x -= 5;
     if (this.bottomBlock.x < -this.bottomBlock.width * 0.5) {
@@ -142,8 +193,8 @@ export default class Game extends Phaser.Scene {
   checkForCollisions() {
     if (
       this.detectCollisionBetweenBodies(
-        this.player.body,
-        this.topBlock.body
+        this.player.collisionBody,
+        this.topBlock.collisionBody
       ) === true
     ) {
       this.handleCollision();
@@ -151,17 +202,30 @@ export default class Game extends Phaser.Scene {
 
     if (
       this.detectCollisionBetweenBodies(
-        this.player.body,
-        this.bottomBlock.body
+        this.player.collisionBody,
+        this.bottomBlock.collisionBody
       ) === true
     ) {
       this.handleCollision();
     }
+
+    if (
+      this.detectCollisionBetweenBodies(
+        this.player.collisionBody,
+        this.invisibleScoreBlock.collisionBody
+      ) === true
+    ) {
+      this.invisibleScoreBlock.scored = true;
+      this.invisibleScoreBlock.x =
+        -this.invisibleScoreBlock.collisionBody.width * 0.5;
+      this.invisibleScoreBlock.updateBody();
+      this.score += 1;
+      this.scoreText.setText(this.score.toString());
+    }
   }
 
   handleCollision() {
-    this.player.tint = 0xff0000;
-    //this.scene.pause();
+    this.scene.start("End", { score: this.score });
   }
 
   update() {
