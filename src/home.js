@@ -1,10 +1,12 @@
 import Arcadians from "arcadians-client-sdk";
 import background from "./assets/background.png";
 
-let testMode = true;
-let testAddress = "0xf0103243f4d22b5696588646b21313d85916a16a";
-let arc = new Arcadians(testMode, testAddress, 50);
+const testMode = true;
+const testAddress = "0xf0103243f4d22b5696588646b21313d85916a16a";
+const gameId = '0cd69241-531c-4698-bf17-454dd6cb1ab4'
+const sdkApiUrl = 'http://localhost:3001'
 
+const arc = new Arcadians(testMode, testAddress, 50, gameId, sdkApiUrl);
 export default class Home extends Phaser.Scene {
   constructor() {
     super("Home");
@@ -16,10 +18,13 @@ export default class Home extends Phaser.Scene {
 
   onClick() {
     let game = this.game;
-    function onUserSelect(selectedNft) {
+    const onUserSelect = async (selectedNft) => {
       if (typeof selectedNft === "object") {
         game.scene.stop("Home");
-        game.scene.start("Game", selectedNft);
+        game.scene.start("Game", {
+          ...selectedNft,
+          arcSdk: arc,
+        });
       } else {
         console.log("User rejected selection!");
       }

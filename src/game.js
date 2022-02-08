@@ -7,8 +7,24 @@ export default class Game extends Phaser.Scene {
   }
 
   init(data) {
+    this.selectedNft = data
     this.selectedAvatar = data.image;
+    this.arcSdk = data.arcSdk;
     console.log(data.image);
+  }
+  
+  async startGameSession () {
+    if (!this.selectedNft) {
+      console.log("No selected NFT!");
+      return
+    }
+    // need this to get the correct signer address
+    this.arcSdk.testMode = false
+    const playerAddress = await this.arcSdk.getCurrentAddress()
+    this.arcSdk.testMode = true
+
+    this.sessionId = await this.arcSdk.startGameSession(playerAddress,
+      this.selectedNft.tokenId, this.selectedNft.contractAddress)
   }
 
   preload() {
@@ -21,6 +37,8 @@ export default class Game extends Phaser.Scene {
   }
 
   create() {
+    this.startGameSession()
+
     this.playerGravity = 0.5;
     this.playerVelocityY = 0;
     this.playerJumpForce = -10;
@@ -229,6 +247,7 @@ export default class Game extends Phaser.Scene {
   }
 
   handleCollision() {
+    this.arcSdk.testPostScore(this.sessionId, this.score)
     this.scene.start("End", { score: this.score });
   }
 
