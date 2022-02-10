@@ -20,9 +20,16 @@ export default class Game extends Phaser.Scene {
     }
     // need this to get the correct signer address
     this.arcSdk.testMode = false
-    const playerAddress = await this.arcSdk.getCurrentAddress()
-    this.arcSdk.testMode = true
+    let playerAddress = null
+    try {
+      playerAddress = await this.arcSdk.getCurrentAddress()
+    } catch (err) {
+      this.arcSdk.testMode = true
+      console.log(err)
+      return
+    }
 
+    this.arcSdk.testMode = true
     this.sessionId = await this.arcSdk.startGameSession(playerAddress,
       this.selectedNft.tokenId, this.selectedNft.contractAddress)
   }
