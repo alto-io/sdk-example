@@ -1,6 +1,6 @@
 import { gameId } from './home'
 
-const createValueDiv = (text, width = '7rem') => {
+const createValueDiv = (text, width = '9rem') => {
     const valueDiv = document.createElement('div')
     valueDiv.style.marginLeft = '1rem'
     valueDiv.style.overflow = 'hidden'
@@ -31,10 +31,10 @@ export default class Leaderboard {
             row.style.display = 'flex';
 
             row.appendChild(createValueDiv(`${i+1}.`, '1.5rem'))
-            row.appendChild(createValueDiv(`Contract: ${data.contract_address}`))
-            row.appendChild(createValueDiv(`Player: ${data.player_address}. `))
-            row.appendChild(createValueDiv(`Token: ${data.token_id}. `))
-            row.appendChild(createValueDiv(`Score: ${data.score}. `))
+            row.appendChild(createValueDiv(`${data.player_address}. `))
+            row.appendChild(createValueDiv(`${data.contract_address}`))
+            row.appendChild(createValueDiv(`${data.token_id}. `))
+            row.appendChild(createValueDiv(`${data.score}. `))
 
             this.root.appendChild(row)
         }
