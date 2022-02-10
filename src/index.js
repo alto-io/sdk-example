@@ -1,7 +1,9 @@
 import Phaser from "phaser";
-import Home from "./home";
+import { arc, Home } from "./home";
 import Game from "./game";
 import End from "./end";
+
+import Leaderboard from './leaderboard'
 
 const config = {
   type: Phaser.AUTO,
@@ -18,3 +20,5 @@ const config = {
 
 const game = new Phaser.Game(config);
 game.scene.start("Home");
+
+const leaderboard = new Leaderboard(arc);
