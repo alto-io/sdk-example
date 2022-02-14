@@ -53,7 +53,7 @@ export default class Game extends Phaser.Scene {
       name: "my_room",
     });
 
-    return room
+    return room;
   }
 
   async create() {
@@ -62,10 +62,13 @@ export default class Game extends Phaser.Scene {
     this.room = await this.join();
 
     this.serverPlayerY = 400;
+    this.interpolate = 0;
+    this.enableInterpolation = false;
 
     this.room.onMessage("move", (message) => {
+      this.enableInterpolation = true;
       this.serverPlayerY = message;
-    })
+    });
 
     console.log(this.room);
 
@@ -284,13 +287,17 @@ export default class Game extends Phaser.Scene {
 
   update() {
     if (this.player !== undefined) {
-      let i = 0;
-      i += 1;
-      if (i <= 15) {
-        this.player.y = Phaser.Math.Linear(this.player.y, this.serverPlayerY, i / 15);
-      }
-      else {
-        i = 0;
+      if (this.enableInterpolation === true) {
+        this.interpolate += 1;
+        this.player.y = Phaser.Math.Linear(
+          this.player.y,
+          this.serverPlayerY,
+          this.interpolate / 15
+        );
+        if (this.interpolate >= 15) {
+          this.enableInterpolation = false;
+          this.interpolate = 0;
+        }
       }
     }
     //this.updatePlayer();
