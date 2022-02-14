@@ -1,37 +1,40 @@
 import background from "./assets/background.png";
 import block from "./assets/block.png";
-
+import * as Colyseus from "colyseus.js";
 export default class Game extends Phaser.Scene {
   constructor() {
     super("Game");
   }
 
   init(data) {
-    this.selectedNft = data
+    this.selectedNft = data;
     this.selectedAvatar = data.image;
     this.arcSdk = data.arcSdk;
-    console.log(data.image);
+    //console.log(data.image);
   }
-  
-  async startGameSession () {
+
+  async startGameSession() {
     if (!this.selectedNft) {
       console.log("No selected NFT!");
-      return
+      return;
     }
     // need this to get the correct signer address
-    this.arcSdk.testMode = false
-    let playerAddress = null
+    this.arcSdk.testMode = false;
+    let playerAddress = null;
     try {
-      playerAddress = await this.arcSdk.getCurrentAddress()
+      playerAddress = await this.arcSdk.getCurrentAddress();
     } catch (err) {
-      this.arcSdk.testMode = true
-      console.log(err)
-      return
+      this.arcSdk.testMode = true;
+      console.log(err);
+      return;
     }
 
-    this.arcSdk.testMode = true
-    this.sessionId = await this.arcSdk.startGameSession(playerAddress,
-      this.selectedNft.tokenId, this.selectedNft.contractAddress)
+    this.arcSdk.testMode = true;
+    this.sessionId = await this.arcSdk.startGameSession(
+      playerAddress,
+      this.selectedNft.tokenId,
+      this.selectedNft.contractAddress
+    );
   }
 
   preload() {
@@ -43,8 +46,28 @@ export default class Game extends Phaser.Scene {
     this.load.image("playerAvatar", this.selectedAvatar);
   }
 
-  create() {
-    this.startGameSession()
+  async join() {
+    var client = new Colyseus.Client("ws://localhost:2567");
+
+    let room = await client.joinOrCreate("my_room", {
+      name: "my_room",
+    });
+
+    return room
+  }
+
+  async create() {
+    //this.startGameSession()
+
+    this.room = await this.join();
+
+    this.serverPlayerY = 400;
+
+    this.room.onMessage("move", (message) => {
+      this.serverPlayerY = message;
+    })
+
+    console.log(this.room);
 
     this.playerGravity = 0.5;
     this.playerVelocityY = 0;
@@ -206,6 +229,7 @@ export default class Game extends Phaser.Scene {
 
   makePlayerJump() {
     this.playerVelocityY = this.playerJumpForce;
+    this.room.send("move");
   }
 
   detectCollisionBetweenBodies(bodyA, bodyB) {
@@ -254,13 +278,23 @@ export default class Game extends Phaser.Scene {
   }
 
   handleCollision() {
-    this.arcSdk.testPostScore(this.sessionId, this.score)
+    //this.arcSdk.testPostScore(this.sessionId, this.score)
     this.scene.start("End", { score: this.score });
   }
 
   update() {
-    this.updatePlayer();
-    this.updateBlocks();
-    this.checkForCollisions();
+    if (this.player !== undefined) {
+      let i = 0;
+      i += 1;
+      if (i <= 15) {
+        this.player.y = Phaser.Math.Linear(this.player.y, this.serverPlayerY, i / 15);
+      }
+      else {
+        i = 0;
+      }
+    }
+    //this.updatePlayer();
+    //this.updateBlocks();
+    //this.checkForCollisions();
   }
 }

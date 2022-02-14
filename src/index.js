@@ -21,4 +21,4 @@ const config = {
 const game = new Phaser.Game(config);
 game.scene.start("Home");
 
-const leaderboard = new Leaderboard(arc);
+//const leaderboard = new Leaderboard(arc);
