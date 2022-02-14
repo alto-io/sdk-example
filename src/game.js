@@ -65,9 +65,14 @@ export default class Game extends Phaser.Scene {
     this.interpolate = 0;
     this.enableInterpolation = false;
 
-    this.room.onMessage("move", (message) => {
+    this.room.onMessage("update", (message) => {
+      this.interpolate = 0;
       this.enableInterpolation = true;
-      this.serverPlayerY = message;
+      this.serverPlayerY = message.y;
+    });
+
+    this.room.onMessage("jump", (msg) => {
+      console.log(msg);
     });
 
     console.log(this.room);
@@ -232,7 +237,7 @@ export default class Game extends Phaser.Scene {
 
   makePlayerJump() {
     this.playerVelocityY = this.playerJumpForce;
-    this.room.send("move");
+    this.room.send("jump");
   }
 
   detectCollisionBetweenBodies(bodyA, bodyB) {
@@ -292,9 +297,9 @@ export default class Game extends Phaser.Scene {
         this.player.y = Phaser.Math.Linear(
           this.player.y,
           this.serverPlayerY,
-          this.interpolate / 15
+          this.interpolate / 6
         );
-        if (this.interpolate >= 15) {
+        if (this.interpolate >= 6) {
           this.enableInterpolation = false;
           this.interpolate = 0;
         }
