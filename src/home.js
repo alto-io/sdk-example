@@ -1,7 +1,7 @@
 import Arcadians from "arcadians-client-sdk";
 import background from "./assets/background.png";
 
-const testMode = true;
+const testMode = false;
 const testAddress = "0xf0103243f4d22b5696588646b21313d85916a16a";
 export const gameId = '0cd69241-531c-4698-bf17-454dd6cb1ab4'
 const sdkApiUrl = 'https://lb-dev.gmfrens.games'

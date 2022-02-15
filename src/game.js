@@ -1,37 +1,41 @@
 import background from "./assets/background.png";
 import block from "./assets/block.png";
-
+import * as Colyseus from "colyseus.js";
 export default class Game extends Phaser.Scene {
   constructor() {
     super("Game");
   }
 
   init(data) {
-    this.selectedNft = data
+    this.selectedNft = data;
     this.selectedAvatar = data.image;
     this.arcSdk = data.arcSdk;
-    console.log(data.image);
+    //console.log(data.image);
+    this.nftData = data;
   }
-  
-  async startGameSession () {
+
+  async startGameSession() {
     if (!this.selectedNft) {
       console.log("No selected NFT!");
-      return
+      return;
     }
     // need this to get the correct signer address
-    this.arcSdk.testMode = false
-    let playerAddress = null
+    this.arcSdk.testMode = false;
+    let playerAddress = null;
     try {
-      playerAddress = await this.arcSdk.getCurrentAddress()
+      playerAddress = await this.arcSdk.getCurrentAddress();
     } catch (err) {
-      this.arcSdk.testMode = true
-      console.log(err)
-      return
+      this.arcSdk.testMode = true;
+      console.log(err);
+      return;
     }
 
-    this.arcSdk.testMode = true
-    this.sessionId = await this.arcSdk.startGameSession(playerAddress,
-      this.selectedNft.tokenId, this.selectedNft.contractAddress)
+    this.arcSdk.testMode = true;
+    this.sessionId = await this.arcSdk.startGameSession(
+      playerAddress,
+      this.selectedNft.tokenId,
+      this.selectedNft.contractAddress
+    );
   }
 
   preload() {
@@ -43,22 +47,44 @@ export default class Game extends Phaser.Scene {
     this.load.image("playerAvatar", this.selectedAvatar);
   }
 
-  create() {
-    this.startGameSession()
+  async join() {
+    var client = new Colyseus.Client("ws://localhost:2567");
 
-    this.playerGravity = 0.5;
-    this.playerVelocityY = 0;
-    this.playerJumpForce = -10;
+    let room = await client.joinOrCreate("my_room", {
+      name: "my_room",
+    });
 
-    this.blocksWidth = 200;
-    this.blocksOffsetDistance = 200;
-    this.blocksOffset = this.setBlocksGroupOffset(
-      -this.blocksOffsetDistance,
-      this.blocksOffsetDistance
-    );
-    this.blocksVerticalDistance = 150;
+    return room;
+  }
 
-    this.score = 0;
+  async create() {
+    //this.startGameSession()
+
+    this.room = await this.join();
+
+    this.serverObjects = {};
+
+    this.interpolate = 0;
+    this.enableInterpolation = false;
+
+    this.room.onMessage("update", (message) => {
+      this.interpolate = 0;
+      this.enableInterpolation = true;
+      this.serverObjects = message;
+      this.scoreText.setText(message.score);
+      //console.log(message);
+    });
+
+    this.room.onMessage("jump", (msg) => {
+      console.log(msg);
+    });
+
+    this.room.onMessage("gameover", (msg) => {
+      this.handleCollision();
+    })
+
+    console.log(this.room);
+
 
     this.backgroundImage = this.add.image(
       this.game.scale.width * 0.5,
@@ -73,51 +99,19 @@ export default class Game extends Phaser.Scene {
     );
     this.player.setOrigin(0.5, 0.5);
     this.player.setScale(0.4, 0.4);
-    this.player.collisionBody = {
-      x: this.player.x,
-      y: this.player.y,
-      width: this.player.width * this.player.scaleX,
-      height: this.player.height * this.player.scaleY,
-    };
-    this.player.updateBody = () => {
-      this.player.collisionBody.x = this.player.x;
-      this.player.collisionBody.y = this.player.y;
-    };
     this.input.on("pointerdown", this.makePlayerJump, this);
 
-    this.topBlock = this.add.image(
-      this.game.scale.width + this.blocksWidth * 0.5,
-      this.game.scale.height + this.blocksVerticalDistance - this.blocksOffset,
-      "block"
-    );
+    this.topBlock = this.add.image(900, -85, "block");
     this.topBlock.setOrigin(0.5, 0.5);
-    this.topBlock.collisionBody = {
-      x: this.topBlock.x,
-      y: this.topBlock.y,
-      width: this.topBlock.width * this.topBlock.scaleX,
-      height: this.topBlock.height * this.topBlock.scaleY,
-    };
-    this.topBlock.updateBody = () => {
-      this.topBlock.collisionBody.x = this.topBlock.x;
-      this.topBlock.collisionBody.y = this.topBlock.y;
-    };
+
+    
 
     this.bottomBlock = this.add.image(
-      this.game.scale.width + this.blocksWidth * 0.5,
-      0 - this.blocksVerticalDistance - this.blocksOffset,
+      900,
+      1014,
       "block"
     );
     this.bottomBlock.setOrigin(0.5, 0.5);
-    this.bottomBlock.collisionBody = {
-      x: this.bottomBlock.x,
-      y: this.bottomBlock.y,
-      width: this.bottomBlock.width * this.bottomBlock.scaleX,
-      height: this.bottomBlock.height * this.bottomBlock.scaleY,
-    };
-    this.bottomBlock.updateBody = () => {
-      this.bottomBlock.collisionBody.x = this.bottomBlock.x;
-      this.bottomBlock.collisionBody.y = this.bottomBlock.y;
-    };
 
     this.invisibleScoreBlock = this.add.image(
       this.game.scale.width * 0.5,
@@ -126,23 +120,12 @@ export default class Game extends Phaser.Scene {
     );
     this.invisibleScoreBlock.setAlpha(0);
     this.invisibleScoreBlock.setOrigin(0.5, 0.5);
-    this.invisibleScoreBlock.collisionBody = {
-      x: this.invisibleScoreBlock.x,
-      y: this.invisibleScoreBlock.y,
-      width: this.invisibleScoreBlock.width * this.invisibleScoreBlock.scaleX,
-      height: this.invisibleScoreBlock.height * this.invisibleScoreBlock.scaleY,
-    };
-    this.invisibleScoreBlock.updateBody = () => {
-      this.invisibleScoreBlock.collisionBody.x = this.invisibleScoreBlock.x;
-      this.invisibleScoreBlock.collisionBody.y = this.invisibleScoreBlock.y;
-    };
-    this.invisibleScoreBlock.scored = false;
     this.invisibleScoreBlock.setVisible(false);
 
     this.scoreText = this.add.text(
       this.game.scale.width * 0.5,
       this.game.scale.height * 0.1,
-      this.score.toString(),
+      "0",
       {
         fill: "#FFFFFF",
         fontSize: "80px",
@@ -153,114 +136,73 @@ export default class Game extends Phaser.Scene {
     this.scoreText.setOrigin(0.5, 0.5);
   }
 
-  setBlocksGroupOffset(min, max) {
-    return Math.floor(Math.random() * (max - min + 1) + min);
-  }
-
-  updatePlayer() {
-    this.playerVelocityY += this.playerGravity;
-    this.player.y += this.playerVelocityY;
-    this.player.updateBody();
-
-    if (
-      this.player.y + this.player.collisionBody.height * 0.5 >=
-      this.game.scale.height
-    ) {
-      this.handleCollision();
-    }
-
-    if (this.player.y - this.player.collisionBody.height * 0.5 <= 0) {
-      this.handleCollision();
-    }
-  }
-
-  updateBlocks() {
-    this.topBlock.x -= 5;
-    if (this.topBlock.x < -this.topBlock.width * 0.5) {
-      this.blocksOffset = this.setBlocksGroupOffset(
-        -this.blocksOffsetDistance,
-        this.blocksOffsetDistance
-      );
-      this.topBlock.x = this.game.scale.width + this.topBlock.width * 0.5;
-      this.topBlock.y =
-        this.game.scale.height +
-        this.blocksVerticalDistance -
-        this.blocksOffset;
-      this.invisibleScoreBlock.scored = false;
-    }
-    this.topBlock.updateBody();
-
-    if (this.invisibleScoreBlock.scored === false) {
-      this.invisibleScoreBlock.x =
-        this.topBlock.x + this.invisibleScoreBlock.collisionBody.width * 0.5;
-      this.invisibleScoreBlock.updateBody();
-    }
-
-    this.bottomBlock.x -= 5;
-    if (this.bottomBlock.x < -this.bottomBlock.width * 0.5) {
-      this.bottomBlock.x = this.game.scale.width + this.bottomBlock.width * 0.5;
-      this.bottomBlock.y = 0 - this.blocksVerticalDistance - this.blocksOffset;
-    }
-    this.bottomBlock.updateBody();
-  }
-
   makePlayerJump() {
     this.playerVelocityY = this.playerJumpForce;
+    this.room.send("jump");
   }
 
-  detectCollisionBetweenBodies(bodyA, bodyB) {
-    if (
-      bodyA.x - bodyA.width * 0.5 <= bodyB.x + bodyB.width * 0.5 &&
-      bodyA.x + bodyA.width * 0.5 >= bodyB.x - bodyB.width * 0.5 &&
-      bodyA.y - bodyA.height * 0.5 <= bodyB.y + bodyB.height * 0.5 &&
-      bodyA.y + bodyA.height * 0.5 >= bodyB.y - bodyB.height * 0.5
-    ) {
-      return true;
-    }
-  }
-
-  checkForCollisions() {
-    if (
-      this.detectCollisionBetweenBodies(
-        this.player.collisionBody,
-        this.topBlock.collisionBody
-      ) === true
-    ) {
-      this.handleCollision();
-    }
-
-    if (
-      this.detectCollisionBetweenBodies(
-        this.player.collisionBody,
-        this.bottomBlock.collisionBody
-      ) === true
-    ) {
-      this.handleCollision();
-    }
-
-    if (
-      this.detectCollisionBetweenBodies(
-        this.player.collisionBody,
-        this.invisibleScoreBlock.collisionBody
-      ) === true
-    ) {
-      this.invisibleScoreBlock.scored = true;
-      this.invisibleScoreBlock.x =
-        -this.invisibleScoreBlock.collisionBody.width * 0.5;
-      this.invisibleScoreBlock.updateBody();
-      this.score += 1;
-      this.scoreText.setText(this.score.toString());
-    }
-  }
-
+ 
   handleCollision() {
-    this.arcSdk.testPostScore(this.sessionId, this.score)
-    this.scene.start("End", { score: this.score });
+    //this.arcSdk.testPostScore(this.sessionId, this.score)
+    this.room.leave(true);
+    this.scene.start("End", { score: this.scoreText.text });
   }
 
   update() {
-    this.updatePlayer();
-    this.updateBlocks();
-    this.checkForCollisions();
+    if (this.player !== undefined) {
+      if (this.enableInterpolation === true) {
+        this.interpolate += 1;
+
+        this.player.y = Phaser.Math.Linear(
+          this.player.y,
+          this.serverObjects.player.y,
+          this.interpolate / 6
+        );
+
+        this.topBlock.x = Phaser.Math.Linear(
+          this.topBlock.x,
+          this.serverObjects.topBlock.x,
+          this.interpolate / 6
+        );
+
+        this.topBlock.y = Phaser.Math.Linear(
+          this.topBlock.y,
+          this.serverObjects.topBlock.y,
+          this.interpolate / 6
+        );
+
+        this.bottomBlock.x = Phaser.Math.Linear(
+          this.bottomBlock.x,
+          this.serverObjects.bottomBlock.x,
+          this.interpolate / 6
+        );
+
+        this.bottomBlock.y = Phaser.Math.Linear(
+          this.bottomBlock.y,
+          this.serverObjects.bottomBlock.y,
+          this.interpolate / 6
+        );
+
+        this.invisibleScoreBlock.x = Phaser.Math.Linear(
+          this.invisibleScoreBlock.x,
+          this.serverObjects.invisibleScoreBlock.x,
+          this.interpolate / 6
+        );
+
+        this.invisibleScoreBlock.y = Phaser.Math.Linear(
+          this.invisibleScoreBlock.y,
+          this.serverObjects.invisibleScoreBlock.y,
+          this.interpolate / 6
+        );
+
+        if (this.interpolate >= 6) {
+          this.enableInterpolation = false;
+          this.interpolate = 0;
+        }
+      }
+    }
+    //this.updatePlayer();
+    //this.updateBlocks();
+    //this.checkForCollisions();
   }
 }
