@@ -1,13 +1,7 @@
-import Arcadians from "arcadians-client-sdk";
 import background from "./assets/background.png";
+import { arc } from "./index";
 
-const testMode = false;
-const testAddress = "0xf0103243f4d22b5696588646b21313d85916a16a";
-export const gameId = '0cd69241-531c-4698-bf17-454dd6cb1ab4'
-const sdkApiUrl = 'https://lb-dev.gmfrens.games'
-
-export const arc = new Arcadians(testMode, testAddress, 50, gameId, sdkApiUrl);
-export class Home extends Phaser.Scene {
+export default class Home extends Phaser.Scene {
   constructor() {
     super("Home");
   }
@@ -22,13 +16,12 @@ export class Home extends Phaser.Scene {
       if (typeof selectedNft === "object") {
         game.scene.stop("Home");
         game.scene.start("Game", {
-          ...selectedNft,
-          arcSdk: arc,
+          selectedNft,
         });
       } else {
         console.log("User rejected selection!");
       }
-    }
+    };
     arc.showNftsWindow(onUserSelect);
   }
 

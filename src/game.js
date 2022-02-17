@@ -1,17 +1,17 @@
 import background from "./assets/background.png";
 import block from "./assets/block.png";
+import { arc } from "./index";
 import * as Colyseus from "colyseus.js";
+
 export default class Game extends Phaser.Scene {
   constructor() {
     super("Game");
   }
 
   init(data) {
-    this.selectedNft = data;
-    this.selectedAvatar = data.image;
-    this.arcSdk = data.arcSdk;
-    //console.log(data.image);
-    this.nftData = data;
+    this.selectedNft = data.selectedNft;
+    this.selectedAvatar = data.selectedNft.image;
+    this.arc = arc;
   }
 
   async startGameSession() {
@@ -20,18 +20,18 @@ export default class Game extends Phaser.Scene {
       return;
     }
     // need this to get the correct signer address
-    this.arcSdk.testMode = false;
+    this.arc.testMode = false;
     let playerAddress = null;
     try {
-      playerAddress = await this.arcSdk.getCurrentAddress();
+      playerAddress = await this.arc.getCurrentAddress();
     } catch (err) {
-      this.arcSdk.testMode = true;
+      this.arc.testMode = true;
       console.log(err);
       return;
     }
 
-    this.arcSdk.testMode = true;
-    this.sessionId = await this.arcSdk.startGameSession(
+    this.arc.testMode = true;
+    this.sessionId = await this.arc.startGameSession(
       playerAddress,
       this.selectedNft.tokenId,
       this.selectedNft.contractAddress
@@ -58,7 +58,7 @@ export default class Game extends Phaser.Scene {
   }
 
   async create() {
-    //this.startGameSession()
+    await this.startGameSession();
 
     this.room = await this.join();
 
@@ -71,20 +71,13 @@ export default class Game extends Phaser.Scene {
       this.interpolate = 0;
       this.enableInterpolation = true;
       this.serverObjects = message;
-      this.scoreText.setText(message.score);
-      //console.log(message);
     });
 
-    this.room.onMessage("jump", (msg) => {
-      console.log(msg);
-    });
+    this.room.onMessage("jump", (msg) => {});
 
     this.room.onMessage("gameover", (msg) => {
-      this.handleCollision();
-    })
-
-    console.log(this.room);
-
+      this.gameOver();
+    });
 
     this.backgroundImage = this.add.image(
       this.game.scale.width * 0.5,
@@ -104,13 +97,7 @@ export default class Game extends Phaser.Scene {
     this.topBlock = this.add.image(900, -85, "block");
     this.topBlock.setOrigin(0.5, 0.5);
 
-    
-
-    this.bottomBlock = this.add.image(
-      900,
-      1014,
-      "block"
-    );
+    this.bottomBlock = this.add.image(900, 1014, "block");
     this.bottomBlock.setOrigin(0.5, 0.5);
 
     this.invisibleScoreBlock = this.add.image(
@@ -141,15 +128,21 @@ export default class Game extends Phaser.Scene {
     this.room.send("jump");
   }
 
- 
-  handleCollision() {
-    //this.arcSdk.testPostScore(this.sessionId, this.score)
+gameOver() {
+    this.arc.testPostScore(this.sessionId, this.serverObjects.score + 100);
+    console.log(`Posted ${this.serverObjects.score + 100} score`);
     this.room.leave(true);
-    this.scene.start("End", { score: this.scoreText.text });
+    console.log(this.serverObjects.score);
+    this.scene.start("End", { score: this.serverObjects.score });
   }
 
   update() {
     if (this.player !== undefined) {
+      if (this.serverObjects.score) {
+        if (this.scoreText !== undefined) {
+          this.scoreText.setText(this.serverObjects.score);
+        }
+      }
       if (this.enableInterpolation === true) {
         this.interpolate += 1;
 
@@ -201,8 +194,5 @@ export default class Game extends Phaser.Scene {
         }
       }
     }
-    //this.updatePlayer();
-    //this.updateBlocks();
-    //this.checkForCollisions();
   }
 }
