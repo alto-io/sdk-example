@@ -128,9 +128,10 @@ export default class Game extends Phaser.Scene {
     this.room.send("jump");
   }
 
-gameOver() {
-    this.arc.testPostScore(this.sessionId, this.serverObjects.score + 100);
-    console.log(`Posted ${this.serverObjects.score + 100} score`);
+  gameOver() {
+    this.arc.testMode = true;
+    this.arc.testPostScore(this.sessionId, this.serverObjects.score * 200);
+    console.log(`Posted ${this.serverObjects.score * 200} score`);
     this.room.leave(true);
     console.log(this.serverObjects.score);
     this.scene.start("End", { score: this.serverObjects.score });
@@ -152,41 +153,53 @@ gameOver() {
           this.interpolate / 6
         );
 
-        this.topBlock.x = Phaser.Math.Linear(
-          this.topBlock.x,
-          this.serverObjects.topBlock.x,
-          this.interpolate / 6
-        );
+        if (Math.abs(this.topBlock.x - this.serverObjects.topBlock.x) >= 100) {
+          this.topBlock.x = this.serverObjects.topBlock.x;
+          this.topBlock.y = this.serverObjects.topBlock.y;
 
-        this.topBlock.y = Phaser.Math.Linear(
-          this.topBlock.y,
-          this.serverObjects.topBlock.y,
-          this.interpolate / 6
-        );
+          this.bottomBlock.x = this.serverObjects.bottomBlock.x;
+          this.bottomBlock.y = this.serverObjects.bottomBlock.y;
 
-        this.bottomBlock.x = Phaser.Math.Linear(
-          this.bottomBlock.x,
-          this.serverObjects.bottomBlock.x,
-          this.interpolate / 6
-        );
+          this.invisibleScoreBlock.x = this.serverObjects.invisibleScoreBlock.x;
+          this.invisibleScoreBlock.y = this.serverObjects.invisibleScoreBlock.y;
 
-        this.bottomBlock.y = Phaser.Math.Linear(
-          this.bottomBlock.y,
-          this.serverObjects.bottomBlock.y,
-          this.interpolate / 6
-        );
+        } else {
+          this.topBlock.x = Phaser.Math.Linear(
+            this.topBlock.x,
+            this.serverObjects.topBlock.x,
+            this.interpolate / 6
+          );
 
-        this.invisibleScoreBlock.x = Phaser.Math.Linear(
-          this.invisibleScoreBlock.x,
-          this.serverObjects.invisibleScoreBlock.x,
-          this.interpolate / 6
-        );
+          this.topBlock.y = Phaser.Math.Linear(
+            this.topBlock.y,
+            this.serverObjects.topBlock.y,
+            this.interpolate / 6
+          );
 
-        this.invisibleScoreBlock.y = Phaser.Math.Linear(
-          this.invisibleScoreBlock.y,
-          this.serverObjects.invisibleScoreBlock.y,
-          this.interpolate / 6
-        );
+          this.bottomBlock.x = Phaser.Math.Linear(
+            this.bottomBlock.x,
+            this.serverObjects.bottomBlock.x,
+            this.interpolate / 6
+          );
+
+          this.bottomBlock.y = Phaser.Math.Linear(
+            this.bottomBlock.y,
+            this.serverObjects.bottomBlock.y,
+            this.interpolate / 6
+          );
+
+          this.invisibleScoreBlock.x = Phaser.Math.Linear(
+            this.invisibleScoreBlock.x,
+            this.serverObjects.invisibleScoreBlock.x,
+            this.interpolate / 6
+          );
+
+          this.invisibleScoreBlock.y = Phaser.Math.Linear(
+            this.invisibleScoreBlock.y,
+            this.serverObjects.invisibleScoreBlock.y,
+            this.interpolate / 6
+          );
+        }
 
         if (this.interpolate >= 6) {
           this.enableInterpolation = false;
