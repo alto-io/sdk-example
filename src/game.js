@@ -12,8 +12,6 @@ export default class Game extends Phaser.Scene {
     this.selectedNft = data.selectedNft;
     this.selectedAvatar = data.selectedNft.image;
     this.currentAddress = data.selectedNft.currentAddress;
-    this.arc = arc;
-    console.log(data);
   }
 
   preload() {
@@ -35,7 +33,7 @@ export default class Game extends Phaser.Scene {
 
   async create() {
 
-    this.sessionId = await this.arc.startGameSession(
+    this.sessionId = await arc.startGameSession(
       this.selectedNft.currentAddress,
       this.selectedNft.tokenId,
       this.selectedNft.contractAddress
@@ -106,7 +104,7 @@ export default class Game extends Phaser.Scene {
   }
 
   gameOver() {
-    this.arc.testPostScore(this.sessionId, 2000);
+    arc.testPostScore(this.sessionId, Date.now());
     this.room.leave(true);
     this.scene.stop("Game");
     this.scene.start("End", { score: this.serverObjects.score });
