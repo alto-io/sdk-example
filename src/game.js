@@ -36,6 +36,7 @@ export default class Game extends Phaser.Scene {
       this.selectedNft.tokenId,
       this.selectedNft.contractAddress
     );
+    this.arc.testMode = false;
   }
 
   preload() {
@@ -132,6 +133,7 @@ export default class Game extends Phaser.Scene {
   gameOver() {
     this.arc.testMode = true;
     this.arc.testPostScore(this.sessionId, this.serverObjects.score * 200);
+    this.arc.testMode = false;
     this.room.leave(true);
     this.scene.stop("Game");
     this.scene.start("End", { score: this.serverObjects.score });
