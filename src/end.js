@@ -8,7 +8,6 @@ export default class Home extends Phaser.Scene {
   }
 
   init(data) {
-    console.log(data);
     this.score = data.score;
   }
 
