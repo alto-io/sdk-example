@@ -136,6 +136,7 @@ export default class Game extends Phaser.Scene {
     console.log(`Posted ${this.serverObjects.score * 200} score`);
     this.room.leave(true);
     console.log(this.serverObjects.score);
+    this.scene.stop("Game");
     this.scene.start("End", { score: this.serverObjects.score });
   }
 

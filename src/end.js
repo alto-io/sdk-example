@@ -262,10 +262,12 @@ export default class Home extends Phaser.Scene {
   }
 
   restartCallback() {
+    this.scene.stop("End");
     this.scene.start("Game");
   }
 
   homeCallback() {
+    this.scene.stop("End");
     this.scene.start("Home");
   }
 
