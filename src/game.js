@@ -9,6 +9,7 @@ export default class Game extends Phaser.Scene {
   }
 
   init(data) {
+    console.log(data);
     this.selectedNft = data.selectedNft;
     this.selectedAvatar = data.selectedNft.image;
     this.arc = arc;
@@ -66,6 +67,7 @@ export default class Game extends Phaser.Scene {
 
     this.interpolate = 0;
     this.enableInterpolation = false;
+    this.interpolationSteps = 6;
 
     this.room.onMessage("update", (message) => {
       this.interpolate = 0;
@@ -139,18 +141,13 @@ export default class Game extends Phaser.Scene {
 
   update() {
     if (this.player !== undefined) {
-      if (this.serverObjects.score) {
-        if (this.scoreText !== undefined) {
-          this.scoreText.setText(this.serverObjects.score);
-        }
-      }
       if (this.enableInterpolation === true) {
         this.interpolate += 1;
 
         this.player.y = Phaser.Math.Linear(
           this.player.y,
           this.serverObjects.player.y,
-          this.interpolate / 6
+          this.interpolate / this.interpolationSteps
         );
 
         if (Math.abs(this.topBlock.x - this.serverObjects.topBlock.x) >= 100) {
@@ -167,45 +164,50 @@ export default class Game extends Phaser.Scene {
           this.topBlock.x = Phaser.Math.Linear(
             this.topBlock.x,
             this.serverObjects.topBlock.x,
-            this.interpolate / 6
+            this.interpolate / this.interpolationSteps
           );
 
           this.topBlock.y = Phaser.Math.Linear(
             this.topBlock.y,
             this.serverObjects.topBlock.y,
-            this.interpolate / 6
+            this.interpolate / this.interpolationSteps
           );
 
           this.bottomBlock.x = Phaser.Math.Linear(
             this.bottomBlock.x,
             this.serverObjects.bottomBlock.x,
-            this.interpolate / 6
+            this.interpolate / this.interpolationSteps
           );
 
           this.bottomBlock.y = Phaser.Math.Linear(
             this.bottomBlock.y,
             this.serverObjects.bottomBlock.y,
-            this.interpolate / 6
+            this.interpolate / this.interpolationSteps
           );
 
           this.invisibleScoreBlock.x = Phaser.Math.Linear(
             this.invisibleScoreBlock.x,
             this.serverObjects.invisibleScoreBlock.x,
-            this.interpolate / 6
+            this.interpolate / this.interpolationSteps
           );
 
           this.invisibleScoreBlock.y = Phaser.Math.Linear(
             this.invisibleScoreBlock.y,
             this.serverObjects.invisibleScoreBlock.y,
-            this.interpolate / 6
+            this.interpolate / this.interpolationSteps
           );
         }
 
-        if (this.interpolate >= 6) {
+        if (this.interpolate >= this.interpolationSteps) {
           this.enableInterpolation = false;
           this.interpolate = 0;
         }
       }
+
+      if (this.serverObjects.score !== undefined) {
+        this.scoreText.setText(this.serverObjects.score.toString());
+      }
+
     }
   }
 }
