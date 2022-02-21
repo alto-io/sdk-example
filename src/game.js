@@ -104,7 +104,7 @@ export default class Game extends Phaser.Scene {
   }
 
   gameOver() {
-    arc.testPostScore(this.sessionId, Date.now());
+    arc.testPostScore(this.sessionId, 9999);
     this.room.leave(true);
     this.scene.stop("Game");
     this.scene.start("End", { score: this.serverObjects.score });
