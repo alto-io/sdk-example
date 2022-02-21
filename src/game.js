@@ -11,32 +11,9 @@ export default class Game extends Phaser.Scene {
   init(data) {
     this.selectedNft = data.selectedNft;
     this.selectedAvatar = data.selectedNft.image;
+    this.currentAddress = data.selectedNft.currentAddress;
     this.arc = arc;
-  }
-
-  async startGameSession() {
-    if (!this.selectedNft) {
-      console.log("No selected NFT!");
-      return;
-    }
-    // need this to get the correct signer address
-    this.arc.testMode = false;
-    let playerAddress = null;
-    try {
-      playerAddress = await this.arc.getCurrentAddress();
-    } catch (err) {
-      this.arc.testMode = true;
-      console.log(err);
-      return;
-    }
-
-    this.arc.testMode = true;
-    this.sessionId = await this.arc.startGameSession(
-      playerAddress,
-      this.selectedNft.tokenId,
-      this.selectedNft.contractAddress
-    );
-    this.arc.testMode = false;
+    console.log(data);
   }
 
   preload() {
@@ -50,33 +27,32 @@ export default class Game extends Phaser.Scene {
 
   async join() {
     var client = new Colyseus.Client("ws://localhost:2567");
-
     let room = await client.joinOrCreate("my_room", {
       name: "my_room",
     });
-
     return room;
   }
 
   async create() {
-    await this.startGameSession();
 
-    this.room = await this.join();
+    this.sessionId = await this.arc.startGameSession(
+      this.selectedNft.currentAddress,
+      this.selectedNft.tokenId,
+      this.selectedNft.contractAddress
+    );
 
     this.serverObjects = {};
-
     this.interpolate = 0;
     this.enableInterpolation = false;
     this.interpolationSteps = 6;
 
+    this.room = await this.join();
     this.room.onMessage("update", (message) => {
       this.interpolate = 0;
       this.enableInterpolation = true;
       this.serverObjects = message;
     });
-
     this.room.onMessage("jump", (msg) => {});
-
     this.room.onMessage("gameover", (msg) => {
       this.gameOver();
     });
@@ -126,14 +102,11 @@ export default class Game extends Phaser.Scene {
   }
 
   makePlayerJump() {
-    this.playerVelocityY = this.playerJumpForce;
     this.room.send("jump");
   }
 
   gameOver() {
-    this.arc.testMode = true;
-    this.arc.testPostScore(this.sessionId, this.serverObjects.score * 200);
-    this.arc.testMode = false;
+    this.arc.testPostScore(this.sessionId, 2000);
     this.room.leave(true);
     this.scene.stop("Game");
     this.scene.start("End", { score: this.serverObjects.score });
@@ -159,7 +132,6 @@ export default class Game extends Phaser.Scene {
 
           this.invisibleScoreBlock.x = this.serverObjects.invisibleScoreBlock.x;
           this.invisibleScoreBlock.y = this.serverObjects.invisibleScoreBlock.y;
-
         } else {
           this.topBlock.x = Phaser.Math.Linear(
             this.topBlock.x,
