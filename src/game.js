@@ -9,7 +9,6 @@ export default class Game extends Phaser.Scene {
   }
 
   init(data) {
-    console.log(data);
     this.selectedNft = data.selectedNft;
     this.selectedAvatar = data.selectedNft.image;
     this.arc = arc;
@@ -133,9 +132,7 @@ export default class Game extends Phaser.Scene {
   gameOver() {
     this.arc.testMode = true;
     this.arc.testPostScore(this.sessionId, this.serverObjects.score * 200);
-    console.log(`Posted ${this.serverObjects.score * 200} score`);
     this.room.leave(true);
-    console.log(this.serverObjects.score);
     this.scene.stop("Game");
     this.scene.start("End", { score: this.serverObjects.score });
   }
