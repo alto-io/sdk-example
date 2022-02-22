@@ -48,6 +48,7 @@ export default class Home extends Phaser.Scene {
     content.style.backgroundColor = "rgba(255,255,255,0.75)";
     content.style.boxShadow = "0 0 0.125rem 0.125rem rgba(128,128,128,0.5)";
     content.style.borderRadius = "0.5rem";
+    content.style.paddingTop = "2rem";
 
     let close = document.createElement("div");
     this.leaderboardWindowElements.push(close);
@@ -55,7 +56,7 @@ export default class Home extends Phaser.Scene {
     close.id = "close";
     close.style.position = "absolute";
     close.style.left = "5%";
-    close.style.top = "5%";
+    close.style.top = "calc(5% - 1rem)";
     close.style.transform = "translate(-50%, -50%)";
 
     close.style.width = "2rem";
@@ -96,7 +97,7 @@ export default class Home extends Phaser.Scene {
         card.style.alignItems = "center";
         card.style.flexDirection = "column";
         card.style.width = "400px";
-        card.style.height = "100px";
+        card.style.height = "200px";
         card.style.borderRadius = "0.5rem";
         card.style.transition = "0.25s";
         card.style.boxShadow = "0 0 0.125rem 0.125rem rgba(128,128,128,0.5)";
@@ -256,6 +257,8 @@ export default class Home extends Phaser.Scene {
     this.homeText.on("pointerdown", this.homeCallback, this);
 
     const leadearboardData = await arc.fetchLeaderboard();
+
+    console.log(leadearboardData);
 
     this.createLeaderboardWindow(leadearboardData);
   }
