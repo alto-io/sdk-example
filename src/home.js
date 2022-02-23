@@ -107,9 +107,6 @@ export default class Home extends Phaser.Scene {
         card.style.justifyContent = "center";
         card.style.alignItems = "center";
         card.style.flexDirection = "column";
-        //card.style.width = "600px";
-        //card.style.height = "200px";
-        //card.style.minHeight = "100px";
         card.style.borderRadius = "0.5rem";
         card.style.transition = "0.25s";
         card.style.boxShadow = "0 0 0.125rem 0.125rem rgba(128,128,128,0.5)";
