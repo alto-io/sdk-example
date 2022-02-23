@@ -96,8 +96,8 @@ export default class Home extends Phaser.Scene {
         card.style.justifyContent = "center";
         card.style.alignItems = "center";
         card.style.flexDirection = "column";
-        card.style.width = "400px";
-        card.style.height = "200px";
+        card.style.width = "600px";
+        card.style.height = "1000px";
         card.style.borderRadius = "0.5rem";
         card.style.transition = "0.25s";
         card.style.boxShadow = "0 0 0.125rem 0.125rem rgba(128,128,128,0.5)";
@@ -111,8 +111,18 @@ export default class Home extends Phaser.Scene {
         playerCenter.style.display = "flex";
         playerCenter.style.justifyContent = "center";
         playerCenter.style.alignItems = "center";
+        playerCenter.style.flexDirection = "column";
         playerCenter.style.width = "100%";
         playerCenter.style.height = "25%";
+
+        let playerText = document.createElement("div");
+        this.leaderboardWindowElements.push(playerText);
+        playerCenter.appendChild(playerText);
+        playerText.id = "playerText" + i;
+        playerText.textContent = "Player";
+        playerText.style.fontSize = "1rem";
+        playerText.style.fontFamily = "'Roboto', Arial, Helvetica, sans-serif";
+        playerText.style.color = "#808080";
 
         let player = document.createElement("div");
         this.leaderboardWindowElements.push(player);
@@ -258,7 +268,7 @@ export default class Home extends Phaser.Scene {
 
     const leadearboardData = await arc.fetchLeaderboard();
 
-    console.log(leadearboardData);
+    console.log(JSON.stringify(leadearboardData));
 
     this.createLeaderboardWindow(leadearboardData);
   }
