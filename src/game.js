@@ -24,7 +24,7 @@ export default class Game extends Phaser.Scene {
   }
 
   async join() {
-    var client = new Colyseus.Client("ws://localhost:2567");
+    var client = new Colyseus.Client("ws://flg-2y.colyseus.de:2567");
     let room = await client.joinOrCreate("my_room", {
       name: "my_room",
     });
