@@ -97,6 +97,19 @@ export default class Game extends Phaser.Scene {
       }
     );
     this.scoreText.setOrigin(0.5, 0.5);
+
+    this.roomText = this.add.text(
+      0,
+      this.game.scale.height,
+      "Loading...",
+      {
+        fill: "#FFFFFF",
+        fontSize: "30px",
+        stroke: "#000000",
+        strokeThickness: 3,
+      }
+    );
+    this.roomText.setOrigin(0, 1);
   }
 
   makePlayerJump() {
@@ -176,6 +189,7 @@ export default class Game extends Phaser.Scene {
 
       if (this.serverObjects.score !== undefined) {
         this.scoreText.setText(this.serverObjects.score.toString());
+        this.roomText.setText("roomId: "+this.room.id.toString());
       }
 
     }
