@@ -99,27 +99,130 @@ export default class Home extends Phaser.Scene {
 
     if (Array.isArray(leaderboardData) === true) {
       for (let i = 0; i < leaderboardData.length; i++) {
-        let card = document.createElement("div");
-        this.leaderboardWindowElements.push(card);
-        content.appendChild(card);
-        card.id = "card-content" + i;
-        card.style.display = "flex";
-        card.style.justifyContent = "center";
-        card.style.alignItems = "center";
-        card.style.flexDirection = "column";
-        card.style.borderRadius = "0.5rem";
-        card.style.transition = "0.25s";
-        card.style.boxShadow = "0 0 0.125rem 0.125rem rgba(128,128,128,0.5)";
-        card.style.margin = "1rem";
-        card.style.backgroundColor = "#F5F5F5";
+        let cardContainer = document.createElement("div");
+        this.leaderboardWindowElements.push(cardContainer);
+        content.appendChild(cardContainer);
+        cardContainer.id = "cardContainer-content" + i;
+        cardContainer.style.display = "flex";
+        cardContainer.style.justifyContent = "center";
+        cardContainer.style.alignItems = "center";
+        //cardContainer.style.flexDirection = "column";
+        cardContainer.style.borderRadius = "0.5rem";
+        cardContainer.style.transition = "0.25s";
+        cardContainer.style.boxShadow =
+          "0 0 0.125rem 0.125rem rgba(128,128,128,0.5)";
+        cardContainer.style.margin = "1rem";
+        cardContainer.style.backgroundColor = "#F5F5F5";
+        //cardContainer.style.padding = "0.5rem";
+
+        let cardLeft = document.createElement("div");
+        this.leaderboardWindowElements.push(cardLeft);
+        cardContainer.appendChild(cardLeft);
+        cardLeft.id = "cardLeft-content" + i;
+        cardLeft.style.display = "flex";
+        cardLeft.style.justifyContent = "center";
+        cardLeft.style.alignItems = "center";
+        cardLeft.style.flexDirection = "column";
+        //cardLeft.style.width = "50%";
+        cardLeft.style.height = "100%";
+
+        let playerLeftCenter = document.createElement("div");
+        this.leaderboardWindowElements.push(playerLeftCenter);
+        cardLeft.appendChild(playerLeftCenter);
+        playerLeftCenter.id = "playerLeft-center" + i;
+        playerLeftCenter.style.display = "flex";
+        playerLeftCenter.style.justifyContent = "flex-start";
+        playerLeftCenter.style.alignItems = "flex-start";
+        playerLeftCenter.style.flexDirection = "column";
+        playerLeftCenter.style.width = "100%";
+        playerLeftCenter.style.height = "25%";
+
+        let playerLeft = document.createElement("div");
+        this.leaderboardWindowElements.push(playerLeft);
+        playerLeftCenter.appendChild(playerLeft);
+        playerLeft.id = "playerLeft" + i;
+        playerLeft.textContent = "PLAYER ADDRESS:";
+        playerLeft.style.fontSize = "1rem";
+        playerLeft.style.fontFamily = "'Roboto', Arial, Helvetica, sans-serif";
+        playerLeft.style.color = "#808080";
+
+        let contractAddressLeftCenter = document.createElement("div");
+        this.leaderboardWindowElements.push(contractAddressLeftCenter);
+        cardLeft.appendChild(contractAddressLeftCenter);
+        contractAddressLeftCenter.id = "contractAddressLeft-center" + i;
+        contractAddressLeftCenter.style.display = "flex";
+        contractAddressLeftCenter.style.justifyContent = "flex-start";
+        contractAddressLeftCenter.style.alignItems = "flex-start";
+        contractAddressLeftCenter.style.width = "100%";
+        contractAddressLeftCenter.style.height = "25%";
+
+        let contractAddressLeft= document.createElement("div");
+        this.leaderboardWindowElements.push(contractAddressLeft);
+        contractAddressLeftCenter.appendChild(contractAddressLeft);
+        contractAddressLeft.id = "contractAddressLeft" + i;
+        contractAddressLeft.textContent = "CONTRACT ADDRESS:";
+        contractAddressLeft.style.fontSize = "1rem";
+        contractAddressLeft.style.fontFamily =
+          "'Roboto', Arial, Helvetica, sans-serif";
+        contractAddressLeft.style.color = "#808080";
+
+        let tokenIdLeftCenter = document.createElement("div");
+        this.leaderboardWindowElements.push(tokenIdLeftCenter);
+        cardLeft.appendChild(tokenIdLeftCenter);
+        tokenIdLeftCenter.id = "tokenId-center" + i;
+        tokenIdLeftCenter.style.display = "flex";
+        tokenIdLeftCenter.style.justifyContent = "flex-start";
+        tokenIdLeftCenter.style.alignItems = "flex-start";
+        tokenIdLeftCenter.style.width = "100%";
+        tokenIdLeftCenter.style.height = "25%";
+
+        let tokenIdLeft = document.createElement("div");
+        this.leaderboardWindowElements.push(tokenIdLeft);
+        tokenIdLeftCenter.appendChild(tokenIdLeft);
+        tokenIdLeft.id = "tokenIdLeft" + i;
+        tokenIdLeft.textContent = "TOKEN ID:";
+        tokenIdLeft.style.fontSize = "1rem";
+        tokenIdLeft.style.fontFamily = "'Roboto', Arial, Helvetica, sans-serif";
+        tokenIdLeft.style.color = "#808080";
+
+        let scoreLeftCenter = document.createElement("div");
+        this.leaderboardWindowElements.push(scoreLeftCenter);
+        cardLeft.appendChild(scoreLeftCenter);
+        scoreLeftCenter.id = "scoreLeft-center" + i;
+        scoreLeftCenter.style.display = "flex";
+        scoreLeftCenter.style.justifyContent = "flex-start";
+        scoreLeftCenter.style.alignItems = "flex-start";
+        scoreLeftCenter.style.width = "100%";
+        scoreLeftCenter.style.height = "25%";
+
+        let scoreLeft = document.createElement("div");
+        this.leaderboardWindowElements.push(scoreLeft);
+        scoreLeftCenter.appendChild(scoreLeft);
+        scoreLeft.id = "score" + i;
+        scoreLeft.textContent = "SCORE:";
+        scoreLeft.style.fontSize = "1rem";
+        scoreLeft.style.fontFamily = "'Roboto', Arial, Helvetica, sans-serif";
+        scoreLeft.style.color = "#808080";
+
+
+        let cardRight = document.createElement("div");
+        this.leaderboardWindowElements.push(cardRight);
+        cardContainer.appendChild(cardRight);
+        cardRight.id = "cardRight-content" + i;
+        cardRight.style.display = "flex";
+        cardRight.style.justifyContent = "center";
+        cardRight.style.alignItems = "center";
+        cardRight.style.flexDirection = "column";
+        //cardRight.style.width = "50%";
+        cardRight.style.height = "100%";
 
         let playerCenter = document.createElement("div");
         this.leaderboardWindowElements.push(playerCenter);
-        card.appendChild(playerCenter);
+        cardRight.appendChild(playerCenter);
         playerCenter.id = "player-center" + i;
         playerCenter.style.display = "flex";
-        playerCenter.style.justifyContent = "center";
-        playerCenter.style.alignItems = "center";
+        playerCenter.style.justifyContent = "flex-start";
+        playerCenter.style.alignItems = "flex-start";
         playerCenter.style.flexDirection = "column";
         playerCenter.style.width = "100%";
         playerCenter.style.height = "25%";
@@ -135,11 +238,11 @@ export default class Home extends Phaser.Scene {
 
         let contractAddressCenter = document.createElement("div");
         this.leaderboardWindowElements.push(contractAddressCenter);
-        card.appendChild(contractAddressCenter);
+        cardRight.appendChild(contractAddressCenter);
         contractAddressCenter.id = "contractAddress-center" + i;
         contractAddressCenter.style.display = "flex";
-        contractAddressCenter.style.justifyContent = "center";
-        contractAddressCenter.style.alignItems = "center";
+        contractAddressCenter.style.justifyContent = "flex-start";
+        contractAddressCenter.style.alignItems = "flex-start";
         contractAddressCenter.style.width = "100%";
         contractAddressCenter.style.height = "25%";
 
@@ -155,11 +258,11 @@ export default class Home extends Phaser.Scene {
 
         let tokenIdCenter = document.createElement("div");
         this.leaderboardWindowElements.push(tokenIdCenter);
-        card.appendChild(tokenIdCenter);
+        cardRight.appendChild(tokenIdCenter);
         tokenIdCenter.id = "tokenId-center" + i;
         tokenIdCenter.style.display = "flex";
-        tokenIdCenter.style.justifyContent = "center";
-        tokenIdCenter.style.alignItems = "center";
+        tokenIdCenter.style.justifyContent = "flex-start";
+        tokenIdCenter.style.alignItems = "flex-start";
         tokenIdCenter.style.width = "100%";
         tokenIdCenter.style.height = "25%";
 
@@ -174,11 +277,11 @@ export default class Home extends Phaser.Scene {
 
         let scoreCenter = document.createElement("div");
         this.leaderboardWindowElements.push(scoreCenter);
-        card.appendChild(scoreCenter);
+        cardRight.appendChild(scoreCenter);
         scoreCenter.id = "score-center" + i;
         scoreCenter.style.display = "flex";
-        scoreCenter.style.justifyContent = "center";
-        scoreCenter.style.alignItems = "center";
+        scoreCenter.style.justifyContent = "flex-start";
+        scoreCenter.style.alignItems = "flex-start";
         scoreCenter.style.width = "100%";
         scoreCenter.style.height = "25%";
 
