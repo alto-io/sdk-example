@@ -183,7 +183,8 @@ export default class Game extends Phaser.Scene {
 
       if (
         typeof this.serverObjects.score === "number" &&
-        this.scoreText !== undefined
+        this.scoreText !== undefined &&
+        typeof this.room.id === "string"
       ) {
         this.scoreText.setText(this.serverObjects.score.toString());
         this.roomText.setText("roomId: " + this.room.id.toString());
