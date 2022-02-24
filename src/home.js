@@ -156,7 +156,7 @@ export default class Home extends Phaser.Scene {
         contractAddressLeftCenter.style.width = "100%";
         contractAddressLeftCenter.style.height = "25%";
 
-        let contractAddressLeft= document.createElement("div");
+        let contractAddressLeft = document.createElement("div");
         this.leaderboardWindowElements.push(contractAddressLeft);
         contractAddressLeftCenter.appendChild(contractAddressLeft);
         contractAddressLeft.id = "contractAddressLeft" + i;
@@ -203,7 +203,6 @@ export default class Home extends Phaser.Scene {
         scoreLeft.style.fontSize = "1rem";
         scoreLeft.style.fontFamily = "'Roboto', Arial, Helvetica, sans-serif";
         scoreLeft.style.color = "#808080";
-
 
         let cardRight = document.createElement("div");
         this.leaderboardWindowElements.push(cardRight);
@@ -329,80 +328,25 @@ export default class Home extends Phaser.Scene {
     this.connectButton.setInteractive({ useHandCursor: true });
     this.connectButton.on("pointerdown", this.onClick, this);
 
-    let dummyData = [
+    this.leaderboardButton = this.add.text(
+      this.game.scale.width * 0.5,
+      this.game.scale.height * 0.8,
+      "LEADERBOARD",
       {
-        created_at: "2022-02-21T21:58:07.332Z",
-        player_address: "0x4cb6459930f30b7ca63a37d7075d85d670c97e1e",
-        contract_address: "0xc3c8a1e1ce5386258176400541922c414e1b35fd",
-        token_id: "14",
-        score: 9999,
-      },
-      {
-        created_at: "2022-02-22T10:39:33.860Z",
-        player_address: "0x4cb6459930f30b7ca63a37d7075d85d670c97e1e",
-        contract_address: "0xc3c8a1e1ce5386258176400541922c414e1b35fd",
-        token_id: "14",
-        score: 9999,
-      },
-      {
-        created_at: "2022-02-22T11:18:51.779Z",
-        player_address: "0x4cb6459930f30b7ca63a37d7075d85d670c97e1e",
-        contract_address: "0xc3c8a1e1ce5386258176400541922c414e1b35fd",
-        token_id: "14",
-        score: 9999,
-      },
-      {
-        created_at: "2022-02-21T21:46:06.603Z",
-        player_address: "0x4cb6459930f30b7ca63a37d7075d85d670c97e1e",
-        contract_address: "0xc3c8a1e1ce5386258176400541922c414e1b35fd",
-        token_id: "14",
-        score: 9999,
-      },
-      {
-        created_at: "2022-02-22T10:36:49.144Z",
-        player_address: "0x4cb6459930f30b7ca63a37d7075d85d670c97e1e",
-        contract_address: "0xc3c8a1e1ce5386258176400541922c414e1b35fd",
-        token_id: "14",
-        score: 9999,
-      },
-      {
-        created_at: "2022-02-23T16:10:23.220Z",
-        player_address: "0x4cb6459930f30b7ca63a37d7075d85d670c97e1e",
-        contract_address: "0xc3c8a1e1ce5386258176400541922c414e1b35fd",
-        token_id: "14",
-        score: 9999,
-      },
-      {
-        created_at: "2022-02-23T16:11:32.167Z",
-        player_address: "0x4cb6459930f30b7ca63a37d7075d85d670c97e1e",
-        contract_address: "0xc3c8a1e1ce5386258176400541922c414e1b35fd",
-        token_id: "14",
-        score: 9999,
-      },
-      {
-        created_at: "2022-02-22T11:18:29.072Z",
-        player_address: "0x4cb6459930f30b7ca63a37d7075d85d670c97e1e",
-        contract_address: "0xc3c8a1e1ce5386258176400541922c414e1b35fd",
-        token_id: "14",
-        score: 9999,
-      },
-      {
-        created_at: "2022-02-22T10:44:07.205Z",
-        player_address: "0x4cb6459930f30b7ca63a37d7075d85d670c97e1e",
-        contract_address: "0xc3c8a1e1ce5386258176400541922c414e1b35fd",
-        token_id: "14",
-        score: 9999,
-      },
-      {
-        created_at: "2022-02-21T16:16:58.783Z",
-        player_address: "0x4cb6459930f30b7ca63a37d7075d85d670c97e1e",
-        contract_address: "0xc3c8a1e1ce5386258176400541922c414e1b35fd",
-        token_id: "14",
-        score: 9999,
-      },
-    ];
+        fill: "#FFFFFF",
+        fontSize: "80px",
+        stroke: "#000000",
+        strokeThickness: 8,
+      }
+    );
+    this.leaderboardButton.setOrigin(0.5, 0.5);
+    this.leaderboardButton.setInteractive({ useHandCursor: true });
+    this.leaderboardButton.on("pointerdown", this.leadearboardCallback, this);
+  }
 
-    this.createLeaderboardWindow(dummyData);
+  async leadearboardCallback() {
+    const leadearboardData = await arc.fetchLeaderboard();
+    this.createLeaderboardWindow(leadearboardData);
   }
 
   update() {}

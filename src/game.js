@@ -32,7 +32,6 @@ export default class Game extends Phaser.Scene {
   }
 
   async create() {
-
     this.sessionId = await arc.startGameSession(
       this.selectedNft.currentAddress,
       this.selectedNft.tokenId,
@@ -98,17 +97,12 @@ export default class Game extends Phaser.Scene {
     );
     this.scoreText.setOrigin(0.5, 0.5);
 
-    this.roomText = this.add.text(
-      0,
-      this.game.scale.height,
-      "Loading...",
-      {
-        fill: "#FFFFFF",
-        fontSize: "30px",
-        stroke: "#000000",
-        strokeThickness: 3,
-      }
-    );
+    this.roomText = this.add.text(0, this.game.scale.height, "Loading...", {
+      fill: "#FFFFFF",
+      fontSize: "30px",
+      stroke: "#000000",
+      strokeThickness: 3,
+    });
     this.roomText.setOrigin(0, 1);
   }
 
@@ -117,7 +111,7 @@ export default class Game extends Phaser.Scene {
   }
 
   gameOver() {
-    arc.testPostScore(this.sessionId, 9999);
+    arc.testPostScore(this.sessionId, this.serverObjects.score);
     this.room.leave(true);
     this.scene.stop("Game");
     this.scene.start("End", { score: this.serverObjects.score });
@@ -187,11 +181,13 @@ export default class Game extends Phaser.Scene {
         }
       }
 
-      if (this.serverObjects.score !== undefined) {
+      if (
+        typeof this.serverObjects.score === "number" &&
+        this.scoreText !== undefined
+      ) {
         this.scoreText.setText(this.serverObjects.score.toString());
-        this.roomText.setText("roomId: "+this.room.id.toString());
+        this.roomText.setText("roomId: " + this.room.id.toString());
       }
-
     }
   }
 }
