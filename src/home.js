@@ -278,7 +278,7 @@ export default class Home extends Phaser.Scene {
         this.leaderboardWindowElements.push(scoreRight);
         scoreRightCenter.appendChild(scoreRight);
         scoreRight.id = "scoreRight" + i;
-        scoreRight.textContent = leaderboardData[i].scoreRight;
+        scoreRight.textContent = leaderboardData[i].score;
         scoreRight.style.fontSize = "1rem";
         scoreRight.style.fontFamily = "'Roboto', Arial, Helvetica, sans-serif";
         scoreRight.style.color = "#808080";
