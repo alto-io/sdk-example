@@ -64,9 +64,8 @@ export default class Home extends Phaser.Scene {
     this.leaderboardButton.on("pointerdown", this.leadearboardCallback, this);
   }
 
-  async leadearboardCallback() {
-    const leadearboardData = await arc.fetchLeaderboard();
-    this.createLeaderboardWindow(leadearboardData);
+  leadearboardCallback() {
+    arc.showLeaderboardWindow();
   }
 
   update() {}
