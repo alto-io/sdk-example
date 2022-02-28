@@ -44,6 +44,7 @@ export default class Game extends Phaser.Scene {
     this.interpolationSteps = 6;
 
     this.room = await this.join();
+    this.room.send("sessionId", this.sessionId);
     this.room.onMessage("update", (message) => {
       this.interpolate = 0;
       this.enableInterpolation = true;
@@ -69,14 +70,14 @@ export default class Game extends Phaser.Scene {
     this.player.setScale(0.4, 0.4);
     this.input.on("pointerdown", this.makePlayerJump, this);
 
-    this.topBlock = this.add.image(900, -85, "block");
+    this.topBlock = this.add.image(2000, this.game.scale.height + 150, "block");
     this.topBlock.setOrigin(0.5, 0.5);
 
-    this.bottomBlock = this.add.image(900, 1014, "block");
+    this.bottomBlock = this.add.image(2000, -150, "block");
     this.bottomBlock.setOrigin(0.5, 0.5);
 
     this.invisibleScoreBlock = this.add.image(
-      this.game.scale.width * 0.5,
+      2000,
       this.game.scale.height * 0.5,
       "block"
     );
@@ -111,7 +112,6 @@ export default class Game extends Phaser.Scene {
   }
 
   gameOver() {
-    arc.testPostScore(this.sessionId, this.serverObjects.score);
     this.room.leave(true);
     this.scene.stop("Game");
     this.scene.start("End", { score: this.serverObjects.score });
