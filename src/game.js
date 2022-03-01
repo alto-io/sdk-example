@@ -17,6 +17,7 @@ export default class Game extends Phaser.Scene {
   preload() {
     this.load.image("background", background);
     this.load.image("block", block);
+    this.load.setCORS("anonymous");
     if (this.textures.exists("playerAvatar") === true) {
       this.textures.remove("playerAvatar");
     }
