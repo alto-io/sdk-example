@@ -36,7 +36,7 @@
   },
   "dependencies": {
     "@babel/runtime": "^7.16.3",
-    "arcadians-client-sdk": "^0.4.0",
+    "arcadians-client-sdk": "^0.4.3",
     "colyseus.js": "^0.14.13",
     "phaser": "^3.55.2"
   }
